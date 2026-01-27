@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My First Web Page</title>
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            font-family: Arial, sans-serif;
+            color: white;
+        }
+
+        .card {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            border-radius: 16px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+
+        h1 {
+            margin-bottom: 10px;
+            font-size: 36px;
+        }
+
+        p {
+            font-size: 18px;
+            opacity: 0.9;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 12px 24px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            background: white;
+            color: #764ba2;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background: #f1f1f1;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <h1>Привет 👋</h1>
+        <p>Это моя первая веб-страница</p>
+        <button onclick="alert('HTML + CSS + JS работают 😎')">
+            Нажми меня
+        </button>
+    </div>
+
+</body>
+</html>

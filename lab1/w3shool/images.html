@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h2>Alternative text</h2>
+
+<p>The alt attribute should reflect the image content, so users who cannot see the image get an understanding of what the image contains:</p>
+
+<img src="c:\Users\acer\Pictures\Screenshots\Снимок экрана 2026-01-26 221443.png" alt="Flowers in Chania" width="460" height="345">
+
+</body>
+</html>
+
+
+
+
+<!DOCTYPE html>
+<html>
+<body>
+
+<h2>Image Size</h2>
+
+<p>Here we use the style attribute to specify the width and height of an image:</p>
+
+<img src="img_girl.jpg" alt="Girl in a jacket" style="width:500px;height:600px;">
+
+</body>
+</html>
+
+
+
+
+
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+/* This style sets the width of all images to 100%: */
+img {
+  width: 100%;
+}
+</style>
+</head>
+<body>
+
+<h2>Width/Height Attributes or Style?</h2>
+
+<p>The first image uses the width attribute (set to 128 pixels), but the style in the head section overrides it, and sets the width to 100%.</p>
+
+<img src="html5.gif" alt="HTML5 Icon" width="128" height="128">
+
+<p>The second image uses the style attribute to set the width to 128 pixels, this will not be overridden by the style in the head section:</p>
+
+<img src="html5.gif" alt="HTML5 Icon" style="width:128px;height:128px;">
+
+</body>
+</html>
+
+
+
+
+
+<!DOCTYPE html>
+<html>
+<body>
+
+<h2>Images on Another Server</h2>
+
+<img src="https://www.w3schools.com/images/w3schools_green.jpg" alt="W3Schools.com" style="width:104px;height:142px;">
+
+</body>
+</html>
+
+
+
+
+
+<!DOCTYPE html>
+<html>
+<body>
+
+<h2>Image Maps</h2>
+<p>Click on the computer, the phone, or the cup of coffee to go to a new page and read more about the topic:</p>
+
+<img src="workplace.jpg" alt="Workplace" usemap="#workmap" width="400" height="379">
+
+<map name="workmap">
+  <area shape="rect" coords="34,44,270,350" alt="Computer" href="computer.htm">
+  <area shape="rect" coords="290,172,333,250" alt="Phone" href="phone.htm">
+  <area shape="circle" coords="337,300,44" alt="Cup of coffee" href="coffee.htm">
+</map>
+
+</body>
+</html>
+
+
+
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+body {
+  background-image: url('img_girl.jpg');
+}
+</style>
+</head>
+<body>
+
+<h2>Background Image</h2>
+
+<p>By default, the background image will repeat itself if it is smaller than the element where it is specified, in this case the body element.</p>
+
+</body>
+</html>
