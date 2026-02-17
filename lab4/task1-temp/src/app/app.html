@@ -1,0 +1,103 @@
+<div class="container">
+  <h1>Welcome to Angular's Signal Tutorial!</h1>
+  <h2>{{ count() }}</h2>
+  <div class="even-odd-indicator {{ isEven() ? 'even' : 'odd' }}">
+    @if (isEven()) {
+      Even
+    } @else {
+      Odd
+    }
+  </div>
+  <div class="buttons">
+    <button (click)="decrement()">-</button>
+    <button (click)="increment()">+</button>
+  </div>
+</div>
+
+
+<form>
+  <div>
+    <label>
+      Email
+      <!-- TODO: Add [formField]="loginForm.email" directive -->
+      <input type="email" />
+    </label>
+  </div>
+
+  <div>
+    <label>
+      Password
+      <!-- TODO: Add [formField]="loginForm.password" directive -->
+      <input type="password" />
+    </label>
+  </div>
+
+  <div>
+    <label>
+      <!-- TODO: Add [formField]="loginForm.rememberMe" directive -->
+      <input type="checkbox" />
+      Remember me
+    </label>
+  </div>
+
+  <button type="submit">Log in</button>
+</form>
+
+<div class="form-debug">
+  <h3>Current Form Values:</h3>
+  <!-- TODO: Display loginForm.email().value() -->
+  <p>Email:</p>
+  <!-- TODO: Display loginForm.password().value() with masking -->
+  <p>Password:</p>
+  <!-- TODO: Display loginForm.rememberMe().value() as Yes/No -->
+  <p>Remember me:</p>
+</div>
+
+
+<!-- TODO: Add (submit)="onSubmit($event)" to form -->
+<form>
+  <div>
+    <label>
+      Email
+      <input type="email" [formField]="loginForm.email" />
+    </label>
+    @if (loginForm.email().invalid() && loginForm.email().touched()) {
+      <div class="error">
+        @for (error of loginForm.email().errors(); track error.kind) {
+          <span>{{ error.message }}</span>
+        }
+      </div>
+    }
+  </div>
+
+  <div>
+    <label>
+      Password
+      <input type="password" [formField]="loginForm.password" />
+    </label>
+    @if (loginForm.password().invalid() && loginForm.password().touched()) {
+      <div class="error">
+        @for (error of loginForm.password().errors(); track error.kind) {
+          <span>{{ error.message }}</span>
+        }
+      </div>
+    }
+  </div>
+
+  <div>
+    <label>
+      <input type="checkbox" [formField]="loginForm.rememberMe" />
+      Remember me
+    </label>
+  </div>
+
+  <!-- TODO: Add [disabled]="loginForm().invalid()" to button -->
+  <button type="submit">Log in</button>
+</form>
+
+<div class="form-debug">
+  <h3>Current Form Values:</h3>
+  <p>Email: {{ loginForm.email().value() }}</p>
+  <p>Password: {{ loginForm.password().value() ? '••••••••' : '(empty)' }}</p>
+  <p>Remember me: {{ loginForm.rememberMe().value() ? 'Yes' : 'No' }}</p>
+</div>
