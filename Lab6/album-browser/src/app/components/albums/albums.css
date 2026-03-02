@@ -1,0 +1,17 @@
+.albums { list-style: none; padding: 0; margin: 0; max-width: 900px; }
+.album { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 0; border-bottom: 1px solid #eee; }
+.album-link { display: flex; gap: 10px; align-items: baseline; text-decoration: none; color: inherit; flex: 1; }
+.album-id { font-weight: 700; min-width: 28px; }
+.album-title { color: #333; }
+.delete { padding: 4px 10px; cursor: pointer; }
+.album-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 6px 0;
+}
+
+.delete {
+  flex: 0 0 auto;
+}

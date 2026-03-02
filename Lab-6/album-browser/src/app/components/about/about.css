@@ -1,0 +1,39 @@
+.about-wrap {
+  padding: 48px 16px;
+}
+
+.about-card {
+  max-width: 900px;
+  background: #fff;
+  border-radius: 18px;
+  padding: 42px 46px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.about-card h1 {
+  margin: 0 0 24px;
+  font-size: 44px;
+  font-weight: 800;
+}
+
+.about-card p {
+  margin: 10px 0;
+  font-size: 18px;
+  line-height: 1.5;
+}
+
+.about-card .desc {
+  margin-top: 18px;
+  opacity: 0.9;
+}
+
+/* чтобы красиво смотрелось на телефоне */
+@media (max-width: 600px) {
+  .about-card {
+    padding: 26px 22px;
+  }
+  .about-card h1 {
+    font-size: 32px;
+  }
+}

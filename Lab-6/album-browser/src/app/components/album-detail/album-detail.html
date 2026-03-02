@@ -1,0 +1,58 @@
+<div class="wrapper">
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="loading">
+    Loading album...
+  </div>
+
+  <!-- Error -->
+  <div *ngIf="error && !loading" class="error">
+    {{ error }}
+  </div>
+
+  <!-- Content -->
+  <div *ngIf="!loading && album" class="card">
+
+    <h2>Album #{{ album.id }}</h2>
+
+    <p><strong>User ID:</strong> {{ album.userId }}</p>
+
+    <label for="title">Title</label>
+    <input
+      id="title"
+      type="text"
+      [(ngModel)]="album.title"
+      placeholder="Enter album title"
+    />
+
+    <div class="buttons">
+      <button
+        class="btn-save"
+        (click)="save()"
+        [disabled]="saving"
+      >
+        {{ saving ? 'Saving...' : 'Save' }}
+      </button>
+
+      <button
+        class="btn-photos"
+        (click)="goToPhotos()"
+      >
+        View Photos
+      </button>
+
+      <button
+        class="btn-back"
+        (click)="goBack()"
+      >
+        Back
+      </button>
+    </div>
+
+    <!-- Success Message -->
+    <div *ngIf="successMessage" class="success">
+      ✅ Album updated successfully!
+    </div>
+
+  </div>
+</div>

@@ -7,7 +7,7 @@
   },
   "newProjectRoot": "projects",
   "projects": {
-    "task1-temp": {
+    "album-browser": {
       "projectType": "application",
       "schematics": {},
       "root": "",
@@ -57,10 +57,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "task1-temp:build:production"
+              "buildTarget": "album-browser:build:production"
             },
             "development": {
-              "buildTarget": "task1-temp:build:development"
+              "buildTarget": "album-browser:build:development"
             }
           },
           "defaultConfiguration": "development"

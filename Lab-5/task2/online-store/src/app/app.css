@@ -1,0 +1,44 @@
+
+h1 {
+  text-align: center;
+  font-family: 'Arial', sans-serif;
+  font-size: 2rem;
+  color: #38232a;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+}
+
+
+.categories button {
+  padding: 10px 20px;
+  margin: 5px;
+  border: none;
+  background-color: #eee;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: all 0.2s;
+}
+
+
+.categories button:hover {
+  background-color: #ddd;
+  transform: scale(1.05);
+}
+
+
+.categories button.selected {
+  background-color: #8e8a8a;
+  color: white;
+  font-weight: bold;
+}
+
+.categories {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+}
+
+  
+  

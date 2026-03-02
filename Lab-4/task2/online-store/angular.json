@@ -3,11 +3,11 @@
   "version": 1,
   "cli": {
     "packageManager": "npm",
-    "analytics": false
+    "analytics": "c5a3a8a0-bf50-4cb2-a695-952f532bf154"
   },
   "newProjectRoot": "projects",
   "projects": {
-    "task1-temp": {
+    "online-store": {
       "projectType": "application",
       "schematics": {},
       "root": "",
@@ -20,14 +20,18 @@
             "browser": "src/main.ts",
             "tsConfig": "tsconfig.app.json",
             "assets": [
-              {
-                "glob": "**/*",
-                "input": "public"
-              }
+                "src/favicon.ico",
+                "src/assets"
             ],
+
             "styles": [
               "src/styles.css"
-            ]
+            ],
+            "server": "src/main.server.ts",
+            "outputMode": "server",
+            "ssr": {
+              "entry": "src/server.ts"
+            }
           },
           "configurations": {
             "production": {
@@ -57,10 +61,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "task1-temp:build:production"
+              "buildTarget": "online-store:build:production"
             },
             "development": {
-              "buildTarget": "task1-temp:build:development"
+              "buildTarget": "online-store:build:development"
             }
           },
           "defaultConfiguration": "development"
