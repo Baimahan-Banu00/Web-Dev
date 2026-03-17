@@ -42,7 +42,7 @@ export class AlbumDetailComponent implements OnInit {
         this.album = data;
         this.loading = false;
 
-        this.cdr.detectChanges(); // 👈 ВОТ ЭТО
+        this.cdr.detectChanges(); 
       },
       error: (err) => {
         console.error('ALBUM ERROR', err);
