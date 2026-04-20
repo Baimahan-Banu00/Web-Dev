@@ -1,0 +1,58 @@
+<div class="home-container">
+  <nav class="navbar">
+    <div class="logo">🍕 FoodGo</div>
+    <div class="nav-links">
+      <a routerLink="/restaurants">Рестораны</a>
+      <a routerLink="/orders" *ngIf="isLoggedIn">Мои заказы</a>
+      <a routerLink="/login" *ngIf="!isLoggedIn" class="login-btn">Войти</a>
+      <button *ngIf="isLoggedIn" (click)="logout()" class="login-btn">Выйти</button>
+    </div>
+  </nav>
+
+  <div class="hero">
+    <h1>Алматы қаласына тағам жеткізу</h1>
+    <p>Мекенжайыңызды енгізіңіз</p>
+    <div class="search-box">
+      <span>📍</span>
+      <input type="text" placeholder="Мекенжайыңыз қандай?" [(ngModel)]="address" />
+      <button (click)="goToRestaurants()" class="search-btn">→</button>
+    </div>
+  </div>
+
+  <div class="categories">
+    <div class="category-item" routerLink="/restaurants">
+      <div class="cat-icon">🍔</div>
+      <span>Фаст фуд</span>
+    </div>
+    <div class="category-item" routerLink="/restaurants">
+      <div class="cat-icon">🥘</div>
+      <span>Еуропалық</span>
+    </div>
+    <div class="category-item" routerLink="/restaurants">
+      <div class="cat-icon">🍜</div>
+      <span>Азиялық</span>
+    </div>
+  </div>
+
+
+  <div class="features">
+    <div class="feature-card">
+      <div class="feature-img">🍽️</div>
+      <h3>Ресторандар</h3>
+      <p>Алматының үздік мейрамханаларынан тамақ тапсырыс беріңіз</p>
+      <button routerLink="/restaurants" class="feature-btn">Қарау</button>
+    </div>
+    <div class="feature-card">
+      <div class="feature-img">🛵</div>
+      <h3>Жылдам жеткізу</h3>
+      <p>30 минут ішінде есігіңізге жеткіземіз</p>
+      <button routerLink="/restaurants" class="feature-btn">Тапсырыс беру</button>
+    </div>
+    <div class="feature-card">
+      <div class="feature-img">👨‍💼</div>
+      <h3>Курьер болу</h3>
+      <p>Өз кестеңізді өзіңіз белгілеңіз және жақсы табыс табыңыз</p>
+      <button class="feature-btn">Тіркелу</button>
+    </div>
+  </div>
+</div>

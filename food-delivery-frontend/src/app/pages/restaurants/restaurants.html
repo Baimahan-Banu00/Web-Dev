@@ -1,0 +1,29 @@
+<div class="container">
+  <nav class="navbar">
+    <h1 routerLink="/">🍕 FoodGo</h1>
+    <div class="nav-links">
+      <a routerLink="/">Главная</a>
+      <a routerLink="/orders">Мои заказы</a>
+    </div>
+  </nav>
+
+  <div class="content">
+    <div class="filters">
+      <button class="filter-btn" [class.active]="activeFilter === 'all'" (click)="setFilter('all')">Барлығы</button>
+      <button class="filter-btn" [class.active]="activeFilter === 'fastfood'" (click)="setFilter('fastfood')">🍔 Фаст фуд</button>
+      <button class="filter-btn" [class.active]="activeFilter === 'european'" (click)="setFilter('european')">🥘 Еуропалық</button>
+      <button class="filter-btn" [class.active]="activeFilter === 'asian'" (click)="setFilter('asian')">🍜 Азиялық</button>
+    </div>
+
+    <div class="restaurants-grid">
+      <div *ngFor="let r of filteredRestaurants" class="restaurant-card" [routerLink]="['/restaurants', r.id]">
+        <div class="restaurant-icon">{{ getIcon(r.name) }}</div>
+        <h3>{{ r.name }}</h3>
+        <p>{{ r.address }}</p>
+        <button class="btn">Смотреть меню</button>
+      </div>
+    </div>
+
+    <div *ngIf="filteredRestaurants.length === 0">Рестораны не найдены</div>
+  </div>
+</div>

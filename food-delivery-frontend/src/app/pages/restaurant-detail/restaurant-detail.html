@@ -1,0 +1,49 @@
+<div class="container">
+  <nav class="navbar">
+    <h1>🍕 Food Delivery</h1>
+    <div class="nav-links">
+      <a routerLink="/restaurants">← Назад</a>
+      <a routerLink="/orders">Мои заказы</a>
+    </div>
+  </nav>
+
+  <div *ngIf="loading" class="loading">Загрузка...</div>
+
+  <div *ngIf="!loading && restaurant" class="content">
+    <div class="restaurant-header">
+      <h2>🍽️ {{ restaurant.name }}</h2>
+      <p>📍 {{ restaurant.address }}</p>
+      <p>📞 {{ restaurant.phone }}</p>
+    </div>
+
+    <div class="main">
+      <div class="menu">
+        <h3>Меню</h3>
+        <div *ngIf="dishes.length === 0" class="empty">Меню пусто</div>
+        <div class="dishes-grid">
+          <div *ngFor="let dish of dishes" class="dish-card">
+            <h4>{{ dish.name }}</h4>
+            <p>{{ dish.description }}</p>
+            <p class="price">{{ dish.price }} ₸</p>
+            <button (click)="addToCart(dish)" class="btn">Добавить</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="cart">
+        <h3>🛒 Корзина</h3>
+        <div *ngIf="orderSuccess" class="success">Заказ оформлен! ✅</div>
+        <div *ngIf="cart.length === 0 && !orderSuccess" class="empty">Корзина пуста</div>
+        <div *ngFor="let item of cart" class="cart-item">
+          <span>{{ item.name }} x{{ item.quantity }}</span>
+          <span>{{ item.price * item.quantity }} ₸</span>
+          <button (click)="removeFromCart(item)" class="remove-btn">✕</button>
+        </div>
+        <div *ngIf="cart.length > 0" class="total">
+          <strong>Итого: {{ getTotal() }} ₸</strong>
+          <button (click)="placeOrder()" class="order-btn">Заказать</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,26 @@
+<div class="login-container">
+  <div class="login-card">
+    <h2>🍕 Food Delivery</h2>
+    <h3>Вход</h3>
+
+    <div *ngIf="error" class="error">{{ error }}</div>
+
+    <input
+      type="text"
+      placeholder="Логин"
+      [(ngModel)]="username"
+      class="input"
+    />
+
+    <input
+      type="password"
+      placeholder="Пароль"
+      [(ngModel)]="password"
+      class="input"
+    />
+
+    <button (click)="onLogin()" class="btn">Войти</button>
+
+    <p>Нет аккаунта? <a routerLink="/register">Зарегистрироваться</a></p>
+  </div>
+</div>
