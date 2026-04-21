@@ -1,0 +1,267 @@
+/* src/app/pages/admin-panel/admin-panel.css */
+.admin-page {
+  display: flex;
+  min-height: 100vh;
+  background: #f5f5f5;
+}
+
+/* SIDEBAR */
+.sidebar {
+  width: 240px;
+  background: #1a1a2e;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  padding: 24px 0;
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  z-index: 100;
+}
+
+.sidebar-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 20px 24px;
+  font-size: 18px;
+  font-weight: 800;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.sidebar-nav {
+  flex: 1;
+  padding: 20px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: none;
+  background: transparent;
+  color: rgba(255,255,255,0.7);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.2s;
+}
+.nav-item:hover { background: rgba(255,255,255,0.1); color: #fff; }
+.nav-item.active { background: #00A082; color: #fff; }
+
+.badge {
+  margin-left: auto;
+  background: #ff5252;
+  color: #fff;
+  border-radius: 50%;
+  width: 20px; height: 20px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700;
+}
+
+.logout-btn {
+  margin: 12px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.2);
+  background: transparent;
+  color: rgba(255,255,255,0.7);
+  font-size: 14px; cursor: pointer;
+  transition: all 0.2s;
+}
+.logout-btn:hover { background: rgba(255,255,255,0.1); color: #fff; }
+
+/* MAIN */
+.main {
+  flex: 1;
+  margin-left: 240px;
+  padding: 32px;
+  overflow-y: auto;
+}
+
+.page-title {
+  font-size: 26px;
+  font-weight: 800;
+  margin: 0 0 28px;
+  color: #1a1a1a;
+}
+
+/* LOADING */
+.loading-wrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 60vh;
+}
+.spinner {
+  width: 44px; height: 44px;
+  border: 4px solid #f0f0f0;
+  border-top-color: #00A082;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* STATS */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.stat-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+  border-left: 4px solid transparent;
+}
+.stat-card.green { border-left-color: #00A082; }
+.stat-card.blue { border-left-color: #2196F3; }
+.stat-card.orange { border-left-color: #FF9800; }
+.stat-card.purple { border-left-color: #9C27B0; }
+.stat-card.teal { border-left-color: #009688; }
+
+.stat-icon { font-size: 36px; }
+.stat-value { font-size: 22px; font-weight: 800; color: #1a1a1a; }
+.stat-label { font-size: 12px; color: #888; margin-top: 2px; }
+
+/* SECTION */
+.section { margin-bottom: 32px; }
+.section-title { font-size: 18px; font-weight: 700; margin: 0 0 16px; }
+
+/* FILTERS */
+.filters-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+.search-input {
+  flex: 1;
+  padding: 10px 16px;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 50px;
+  font-size: 14px;
+  outline: none;
+  min-width: 200px;
+}
+.search-input:focus { border-color: #00A082; }
+.status-select {
+  padding: 10px 16px;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 50px;
+  font-size: 14px;
+  outline: none;
+  background: #fff;
+  cursor: pointer;
+}
+.results-info { font-size: 13px; color: #888; margin-bottom: 12px; }
+
+/* TABLE */
+.table-wrap {
+  background: #fff;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+  overflow-x: auto;
+}
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 700px;
+}
+.table th {
+  background: #f8f8f8;
+  padding: 12px 16px;
+  text-align: left;
+  font-size: 12px;
+  font-weight: 700;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.table td {
+  padding: 14px 16px;
+  font-size: 14px;
+  color: #333;
+  border-bottom: 1px solid #f5f5f5;
+}
+.table tr:last-child td { border-bottom: none; }
+.table tr:hover td { background: #fafafa; }
+
+/* STATUS CHIPS */
+.status-chip {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.status-pending { background: #fff8e1; color: #f59e0b; }
+.status-confirmed { background: #e8f5e9; color: #2e7d32; }
+.status-cooking { background: #fff3e0; color: #e65100; }
+.status-delivery { background: #e3f2fd; color: #1565c0; }
+.status-delivered { background: #e8f5e9; color: #00A082; }
+.status-cancelled { background: #ffebee; color: #c62828; }
+
+.action-select {
+  padding: 6px 10px;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 12px;
+  cursor: pointer;
+  background: #fff;
+  outline: none;
+}
+.action-select:focus { border-color: #00A082; }
+
+/* RESTAURANTS */
+.restaurants-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+}
+.restaurant-admin-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+}
+.rest-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; }
+.rest-info h3 { font-size: 16px; font-weight: 700; margin: 0 0 4px; }
+.rest-info p { font-size: 13px; color: #888; margin: 0; }
+.rest-status {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.rest-status.open { background: #e8f5e9; color: #00A082; }
+.rest-status.closed { background: #ffebee; color: #c62828; }
+.rest-actions { display: flex; gap: 8px; }
+.toggle-btn {
+  padding: 8px 20px;
+  border-radius: 50px;
+  border: 2px solid #00A082;
+  background: #fff;
+  color: #00A082;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.toggle-btn:hover { background: #00A082; color: #fff; }
+
+/* EMPTY */
+.empty-state { text-align: center; padding: 60px 20px; color: #888; font-size: 16px; }

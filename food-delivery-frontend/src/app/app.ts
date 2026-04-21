@@ -11,3 +11,7 @@ import { RouterOutlet } from '@angular/router';
 export class AppComponent {
   title = 'food-delivery-frontend';
 }
+export const environment = {
+  production: false,
+  apiUrl: 'http://127.0.0.1:8000/api' // Убедись, что порт 8000
+};

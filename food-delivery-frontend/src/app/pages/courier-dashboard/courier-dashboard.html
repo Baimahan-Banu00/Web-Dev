@@ -1,0 +1,198 @@
+<!-- src/app/pages/courier-dashboard/courier-dashboard.html -->
+<div class="dashboard">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <span>🛵</span>
+      <span>{{ courierName }}</span>
+    </div>
+
+    <div class="courier-status">
+      <span class="status-dot" [class.active]="isAvailable"></span>
+      <span>{{ isAvailable ? 'Бос' : 'Жұмыста' }}</span>
+    </div>
+
+    <nav class="sidebar-nav">
+      <button class="nav-item" [class.active]="activeTab==='available'" (click)="activeTab='available'; loadAvailable()">
+        📦 Қол жетімді тапсырыстар
+        <span class="badge" *ngIf="availableOrders.length > 0">{{ availableOrders.length }}</span>
+      </button>
+      <button class="nav-item" [class.active]="activeTab==='active'" (click)="activeTab='active'">
+        🛵 Белсенді тапсырыс
+        <span class="badge active-badge" *ngIf="getMyOrdersCount() > 0">{{ getMyOrdersCount() }}</span>
+      </button>
+      <button class="nav-item" [class.active]="activeTab==='history'" (click)="activeTab='history'; loadMyOrders()">
+        📋 Тарих
+      </button>
+    </nav>
+
+    <button class="logout-btn" (click)="logout()">🚪 Шығу</button>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <div *ngIf="loading" class="loading-wrap">
+      <div class="spinner"></div>
+    </div>
+
+    <!-- ===== ДОСТУПНЫЕ ЗАКАЗЫ ===== -->
+    <div *ngIf="!loading && activeTab === 'available'">
+      <div class="page-header">
+        <h1 class="page-title">📦 Қол жетімді тапсырыстар</h1>
+        <button class="refresh-btn" (click)="loadAvailable()">🔄 Жаңарту</button>
+      </div>
+
+      <div *ngIf="availableOrders.length === 0" class="empty-state">
+        <div class="empty-icon">📭</div>
+        <p>Қазір қол жетімді тапсырыстар жоқ</p>
+        <p class="empty-sub">Жаңа тапсырыстар автоматты түрде жаңарады</p>
+      </div>
+
+      <div class="orders-grid">
+        <div *ngFor="let order of availableOrders" class="order-card available">
+
+          <div class="order-header">
+            <h3>#{{ order.id }}</h3>
+            <span class="restaurant-name">🍽️ {{ order.restaurant_name || 'Ресторан' }}</span>
+          </div>
+
+          <div class="order-details">
+            <div class="detail-row">
+              <span class="detail-icon">👤</span>
+              <span>{{ order.customer_name || 'Клиент' }}</span>
+            </div>
+            <div class="detail-row" *ngIf="order.delivery_address">
+              <span class="detail-icon">📍</span>
+              <span>{{ order.delivery_address }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-icon">🕐</span>
+              <span>{{ order.created_at | date:'HH:mm' }}</span>
+            </div>
+          </div>
+
+          <div class="order-items-preview">
+            <div *ngFor="let item of order.items?.slice(0,3)" class="item-preview">
+              {{ item.dish_name }} x{{ item.quantity }}
+            </div>
+            <div *ngIf="order.items?.length > 3" class="more-items">
+              +{{ order.items.length - 3 }} тағам
+            </div>
+          </div>
+
+          <div class="order-footer">
+            <span class="order-total">{{ order.total_price | number }} ₸</span>
+            <button class="take-btn" (click)="takeOrder(order)">
+              🛵 Қабылдау
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== АКТИВНЫЙ ЗАКАЗ ===== -->
+    <div *ngIf="!loading && activeTab === 'active'">
+      <h1 class="page-title">🛵 Белсенді тапсырыс</h1>
+
+      <div *ngIf="!activeOrder" class="empty-state">
+        <div class="empty-icon">🛵</div>
+        <p>Белсенді тапсырыс жоқ</p>
+        <button class="goto-btn" (click)="activeTab='available'">Тапсырыстарды қарау</button>
+      </div>
+
+      <div *ngIf="activeOrder" class="active-order-card">
+
+        <div class="active-header">
+          <div>
+            <h2>Тапсырыс #{{ activeOrder.id }}</h2>
+            <p class="active-restaurant">🍽️ {{ activeOrder.restaurant_name }}</p>
+          </div>
+          <span class="status-chip delivery">🛵 Жолда</span>
+        </div>
+
+        <!-- STEPS -->
+        <div class="delivery-steps">
+          <div class="step done">
+            <div class="step-icon">✅</div>
+            <span>Қабылданды</span>
+          </div>
+          <div class="step-line done"></div>
+          <div class="step done">
+            <div class="step-icon">🍽️</div>
+            <span>Ресторандан алынды</span>
+          </div>
+          <div class="step-line"></div>
+          <div class="step active">
+            <div class="step-icon">🛵</div>
+            <span>Жеткізілуде</span>
+          </div>
+          <div class="step-line"></div>
+          <div class="step">
+            <div class="step-icon">🏠</div>
+            <span>Жеткізілді</span>
+          </div>
+        </div>
+
+        <!-- CLIENT INFO -->
+        <div class="client-info">
+          <h4>👤 Клиент ақпараты</h4>
+          <p>{{ activeOrder.customer_name || 'Клиент' }}</p>
+          <p *ngIf="activeOrder.delivery_address">📍 {{ activeOrder.delivery_address }}</p>
+        </div>
+
+        <!-- ORDER ITEMS -->
+        <div class="order-items">
+          <h4>🍽️ Тапсырыс құрамы</h4>
+          <div *ngFor="let item of activeOrder.items" class="item-row">
+            <span>{{ item.dish_name }}</span>
+            <span class="item-qty">x{{ item.quantity }}</span>
+            <span class="item-price">{{ item.price | number }} ₸</span>
+          </div>
+          <div class="total-row">
+            <strong>Жиыны: {{ activeOrder.total_price | number }} ₸</strong>
+          </div>
+        </div>
+
+        <!-- COMPLETE BUTTON -->
+        <button
+          *ngIf="activeOrder.status === 'delivery'"
+          (click)="completeOrder(activeOrder.id)"
+          class="complete-btn">
+          🎉 Жеткізілді! Аяқтау
+        </button>
+
+        <div *ngIf="activeOrder.status === 'delivered'" class="delivered-msg">
+          ✅ Тапсырыс сәтті жеткізілді!
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== ИСТОРИЯ ===== -->
+    <div *ngIf="!loading && activeTab === 'history'">
+      <h1 class="page-title">📋 Жеткізу тарихы</h1>
+
+      <div *ngIf="myOrders.length === 0" class="empty-state">
+        <div class="empty-icon">📋</div>
+        <p>Тарих бос</p>
+      </div>
+
+      <div class="history-list">
+        <div *ngFor="let order of myOrders" class="history-card">
+          <div class="history-header">
+            <span><strong>#{{ order.id }}</strong> — {{ order.restaurant_name }}</span>
+            <span class="status-chip" [class]="'s-' + order.status">
+              {{ getStatusLabel(order.status) }}
+            </span>
+          </div>
+          <div class="history-meta">
+            <span>{{ order.total_price | number }} ₸</span>
+            <span>{{ order.created_at | date:'dd.MM.yyyy HH:mm' }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>

@@ -1,33 +1,93 @@
-<div class="login-container">
-  <div class="login-card">
-    <h2>🍕 Food Delivery</h2>
-    <h3>Регистрация</h3>
+<!-- src/app/pages/register/register.html -->
+<div class="page">
+  <div class="card">
 
-    <div *ngIf="error" class="error">{{ error }}</div>
+    <div class="logo">🍕 FoodGo</div>
+    <h2>Тіркелу</h2>
 
-    <input
-      type="text"
-      placeholder="Логин"
-      [(ngModel)]="username"
-      class="input"
-    />
+    <div *ngIf="error" class="error-msg">⚠️ {{ error }}</div>
 
-    <input
-      type="email"
-      placeholder="Email"
-      [(ngModel)]="email"
-      class="input"
-    />
+    <!-- РОЛ ТАНДАУ -->
+    <div class="role-section">
+      <p class="role-label">Сіз кімсіз?</p>
+      <div class="role-grid">
+        <div class="role-card" [class.active]="role === 'customer'" (click)="role='customer'; onRoleChange()">
+          <span class="role-icon">🛍️</span>
+          <span>Сатып алушы</span>
+        </div>
+        <div class="role-card" [class.active]="role === 'courier'" (click)="role='courier'; onRoleChange()">
+          <span class="role-icon">🛵</span>
+          <span>Курьер</span>
+        </div>
+        <div class="role-card" [class.active]="role === 'restaurant'" (click)="role='restaurant'; onRoleChange()">
+          <span class="role-icon">🍽️</span>
+          <span>Ресторан</span>
+        </div>
+      </div>
+    </div>
 
-    <input
-      type="password"
-      placeholder="Пароль"
-      [(ngModel)]="password"
-      class="input"
-    />
+    <!-- НЕГІЗГІ ӨРІСТЕР -->
+    <div class="field">
+      <label>Логин</label>
+      <input type="text" [(ngModel)]="username" placeholder="Логин" class="input" />
+    </div>
 
-    <button (click)="onRegister()" class="btn">Зарегистрироваться</button>
+    <div class="field">
+      <label>Email</label>
+      <input type="email" [(ngModel)]="email" placeholder="email@example.com" class="input" />
+    </div>
 
-    <p>Уже есть аккаунт? <a routerLink="/login">Войти</a></p>
+    <div class="field">
+      <label>Пароль</label>
+      <input type="password" [(ngModel)]="password" placeholder="Кемінде 6 символ" class="input" />
+    </div>
+
+    <div class="field">
+      <label>Парольді растау</label>
+      <input type="password" [(ngModel)]="password2" placeholder="Парольді қайталаңыз" class="input" />
+    </div>
+
+    <!-- КУРЬЕР АНКЕТАСЫ -->
+    <div *ngIf="showCourierForm" class="courier-form">
+      <div class="courier-banner">
+        🛵 Курьер анкетасы
+      </div>
+
+      <div class="field">
+        <label>Телефон нөмірі</label>
+        <input type="tel" [(ngModel)]="phone" placeholder="+7 701 234 5678" class="input" />
+      </div>
+
+      <div class="field">
+        <label>Көлік түрі</label>
+        <div class="vehicle-grid">
+          <div class="vehicle-card" [class.active]="vehicleType==='scooter'" (click)="vehicleType='scooter'">
+            🛵 Самокат/Скутер
+          </div>
+          <div class="vehicle-card" [class.active]="vehicleType==='bike'" (click)="vehicleType='bike'">
+            🚴 Велосипед
+          </div>
+          <div class="vehicle-card" [class.active]="vehicleType==='car'" (click)="vehicleType='car'">
+            🚗 Автомобиль
+          </div>
+        </div>
+      </div>
+
+      <div class="courier-note">
+        ✅ Тіркелгеннен кейін бірден жұмысты бастай аласыз
+      </div>
+    </div>
+
+    <!-- РЕСТОРАН ЕСКЕРТПЕСІ -->
+    <div *ngIf="role === 'restaurant'" class="restaurant-note">
+      🍽️ Тіркелгеннен кейін өз ресторанңызды қосып, мәзірді баптай аласыз
+    </div>
+
+    <button (click)="onRegister()" class="btn" [disabled]="loading">
+      <span *ngIf="!loading">Тіркелу</span>
+      <span *ngIf="loading" class="spinner"></span>
+    </button>
+
+    <p class="switch">Аккаунт бар ма? <a routerLink="/login">Кіру</a></p>
   </div>
 </div>

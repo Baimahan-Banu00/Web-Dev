@@ -1,15 +1,12 @@
 // src/app/pages/restaurant-detail/restaurant-detail.ts
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
-import { timeout, catchError } from 'rxjs/operators';
-import { of } from 'rxjs';
-import { OrderService } from '../../services/order';
 import { Dish, CartItem } from '../../interfaces/models';
 import { MOCK_RESTAURANTS, MOCK_DISHES, Restaurant } from '../../data/mockdata';
 import { AuthModalComponent } from '../../auth-modal/auth-modal';
+import { OrderService } from '../../services/order';
 
 @Component({
   selector: 'app-restaurant-detail',
@@ -23,7 +20,6 @@ export class RestaurantDetailComponent implements OnInit {
   dishes: Dish[] = [];
   cart: CartItem[] = [];
   loading = true;
-  orderSuccess = false;
   orderLoading = false;
   orderError = '';
   cartOpen = false;
@@ -32,45 +28,18 @@ export class RestaurantDetailComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private http: HttpClient,
-    private orderService: OrderService
+    private orderService: OrderService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
     const id = Number(this.route.snapshot.paramMap.get('id'));
-
     const mock = MOCK_RESTAURANTS.find((r: Restaurant) => r.id === id);
     if (mock) {
       this.restaurant = mock;
       this.dishes = MOCK_DISHES[id] || [];
-      this.loading = false;
     }
-
-    this.http.get<any>(`http://127.0.0.1:8000/api/restaurants/${id}/`).pipe(
-      timeout(3000),
-      catchError(() => of(null))
-    ).subscribe((data: any) => {
-      if (data) {
-        this.restaurant = {
-          ...mock,
-          ...data,
-          image: data.image || mock?.image,
-          rating: mock?.rating || 95,
-          reviews: mock?.reviews || 100,
-          deliveryTime: mock?.deliveryTime || '30-40 мин',
-          deliveryFee: mock?.deliveryFee || '299 ₸',
-          tags: mock?.tags || [],
-        } as Restaurant;
-        const backendDishes = data.menu_items || data.dishes || [];
-        this.dishes = backendDishes.length > 0
-          ? backendDishes.map((d: Dish) => ({
-              ...d,
-              image: d.image || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400&q=80'
-            }))
-          : MOCK_DISHES[id] || [];
-      }
-      this.loading = false;
-    });
+    this.loading = false;
   }
 
   isLoggedIn(): boolean {
@@ -85,6 +54,7 @@ export class RestaurantDetailComponent implements OnInit {
       this.cart.push({ ...dish, quantity: 1 });
     }
     this.cartOpen = true;
+    this.cdr.detectChanges();
   }
 
   decreaseQty(dish: Dish) {
@@ -95,13 +65,17 @@ export class RestaurantDetailComponent implements OnInit {
     } else {
       this.cart[idx].quantity--;
     }
+    this.cdr.detectChanges();
   }
 
   getCartItem(dish: Dish): CartItem | undefined {
     return this.cart.find(item => item.id === dish.id);
   }
 
-  clearCart() { this.cart = []; }
+  clearCart() {
+    this.cart = [];
+    this.cdr.detectChanges();
+  }
 
   getTotal(): number {
     return this.cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
@@ -135,40 +109,52 @@ export class RestaurantDetailComponent implements OnInit {
     if (!this.restaurant) return;
     this.orderLoading = true;
     this.orderError = '';
+    this.cdr.detectChanges();
 
+    const total = this.getTotal();
     const orderData = {
       restaurant: this.restaurant.id,
-      items_input: this.cart.map(item => ({ dish: item.id, quantity: item.quantity }))
+      restaurant_name: this.restaurant.name,
+      total_price: total,
+      items_input: this.cart.map(item => ({
+        dish: item.id,
+        dish_name: item.name,
+        quantity: item.quantity,
+        price: item.price
+      }))
     };
 
     this.orderService.createOrder(orderData).subscribe({
       next: (res: any) => {
         this.orderLoading = false;
+        const cartCopy = [...this.cart];
         this.cart = [];
         this.cartOpen = false;
-        // Переходим на страницу оплаты
+        this.cdr.detectChanges();
         this.router.navigate(['/payment'], {
           state: {
-            total: res.total_price || 0,
-            orderId: res.id || 0
+            total: total,
+            orderId: res.id || 0,
+            restaurantName: this.restaurant?.name || ''
           }
         });
       },
-      error: (err: any) => {
-        this.orderError = err.status === 401
-          ? 'Жүйеге кіріңіз'
-          : 'Тапсырыс жіберілмеді.';
+      error: () => {
+        this.orderError = 'Тапсырыс жіберілмеді. Қайталап көріңіз.';
         this.orderLoading = false;
+        this.cdr.detectChanges();
       }
     });
   }
 
   getRestaurantImage(): string {
-    return this.restaurant?.image || 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&q=80';
+    return this.restaurant?.image ||
+      'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&q=80';
   }
 
   getDishImage(dish: Dish): string {
-    return dish.image || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400&q=80';
+    return dish.image ||
+      'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400&q=80';
   }
 
   getRating(): number { return (this.restaurant as any)?.rating || 95; }

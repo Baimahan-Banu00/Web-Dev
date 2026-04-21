@@ -3,7 +3,6 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule, DecimalPipe, DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { OrderService } from '../../services/order';
-import { Order } from '../../interfaces/models';
 
 @Component({
   selector: 'app-orders',
@@ -13,22 +12,20 @@ import { Order } from '../../interfaces/models';
   styleUrl: './orders.css'
 })
 export class OrdersComponent implements OnInit {
-  orders: Order[] = [];
+  orders: any[] = [];
   loading = true;
   error = '';
 
   constructor(private orderService: OrderService) {}
 
   ngOnInit() {
-    this.orderService.getOrders().subscribe({
-      next: (data: Order[]) => {
+    this.orderService.getOrdersList().subscribe({
+      next: (data: any[]) => {
         this.orders = data;
         this.loading = false;
       },
-      error: (err) => {
-        this.error = err.status === 401
-          ? 'Тапсырыстарды көру үшін жүйеге кіріңіз'
-          : 'Тапсырыстарды жүктеу мүмкін болмады';
+      error: () => {
+        this.error = 'Тапсырыстарды жүктеу мүмкін болмады';
         this.loading = false;
       }
     });

@@ -8,6 +8,9 @@ import { RestaurantDetailComponent } from './pages/restaurant-detail/restaurant-
 import { OrdersComponent } from './pages/orders/orders';
 import { PaymentComponent } from './pages/payment/payment';
 import { TrackingComponent } from './pages/tracking/tracking';
+import { AdminPanelComponent } from './pages/admin-panel/admin-panel';
+import { RestaurantDashboardComponent } from './pages/restaurant-dashboard/restaurant-dashboard';
+import { CourierDashboardComponent } from './pages/courier-dashboard/courier-dashboard';
 import { authGuard } from './guards/auth-guard';
 
 export const routes: Routes = [
@@ -20,4 +23,7 @@ export const routes: Routes = [
   { path: 'orders', component: OrdersComponent, canActivate: [authGuard] },
   { path: 'payment', component: PaymentComponent },
   { path: 'tracking', component: TrackingComponent },
+  { path: 'admin-panel', component: AdminPanelComponent, canActivate: [authGuard] },
+  { path: 'restaurant-dashboard', component: RestaurantDashboardComponent, canActivate: [authGuard] },
+  { path: 'courier-dashboard', component: CourierDashboardComponent, canActivate: [authGuard] },
 ];

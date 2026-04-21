@@ -1,46 +1,100 @@
-.login-container {
+/* src/app/pages/register/register.css */
+.page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f5f7fa 0%, #e8f5f2 100%);
   display: flex;
-  justify-content: center;
   align-items: center;
-  height: 100vh;
-  background: #f5f5f5;
+  justify-content: center;
+  padding: 20px;
 }
 
-.login-card {
-  background: white;
-  padding: 40px;
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-  width: 350px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  text-align: center;
+.card {
+  background: #fff;
+  border-radius: 24px;
+  padding: 36px 32px;
+  width: 100%;
+  max-width: 480px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.1);
 }
 
-h2 { font-size: 28px; margin: 0; }
-h3 { margin: 0; color: #333; }
+.logo { font-size: 24px; font-weight: 800; color: #00A082; margin-bottom: 8px; }
+h2 { font-size: 26px; font-weight: 800; margin: 0 0 24px; color: #1a1a1a; }
 
+.error-msg {
+  background: #fff0f0; border: 1px solid #ffcdd2;
+  border-radius: 10px; padding: 10px 14px;
+  font-size: 13px; color: #c62828; margin-bottom: 16px;
+}
+
+/* ROLE SELECTION */
+.role-section { margin-bottom: 20px; }
+.role-label { font-size: 13px; font-weight: 600; color: #555; margin: 0 0 10px; }
+.role-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.role-card {
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  padding: 14px 8px; border: 2px solid #e0e0e0; border-radius: 14px;
+  cursor: pointer; transition: all 0.2s; background: #fafafa;
+}
+.role-card:hover { border-color: #00A082; background: #f0faf8; }
+.role-card.active { border-color: #00A082; background: #f0faf8; }
+.role-icon { font-size: 28px; }
+.role-card span:last-child { font-size: 12px; font-weight: 600; color: #444; }
+.role-card.active span:last-child { color: #00A082; }
+
+/* FIELDS */
+.field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+.field label { font-size: 13px; font-weight: 600; color: #444; }
 .input {
-  padding: 12px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  font-size: 16px;
-  outline: none;
+  padding: 13px 16px; border: 1.5px solid #e0e0e0;
+  border-radius: 12px; font-size: 15px; outline: none;
+  transition: border-color 0.2s; box-sizing: border-box; width: 100%;
+}
+.input:focus { border-color: #00A082; }
+
+/* COURIER FORM */
+.courier-form {
+  background: #f0faf8; border-radius: 14px; padding: 16px;
+  margin-bottom: 16px; border: 1px solid #b2dfdb;
+}
+.courier-banner {
+  font-size: 14px; font-weight: 700; color: #00A082;
+  margin-bottom: 14px;
+}
+.vehicle-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.vehicle-card {
+  padding: 10px 6px; border: 2px solid #e0e0e0; border-radius: 10px;
+  cursor: pointer; text-align: center; font-size: 12px; font-weight: 500;
+  transition: all 0.2s; background: #fff;
+}
+.vehicle-card:hover { border-color: #00A082; }
+.vehicle-card.active { border-color: #00A082; background: #e8f5e9; color: #00A082; font-weight: 700; }
+.courier-note {
+  font-size: 12px; color: #00A082; margin-top: 12px;
+  padding: 8px 12px; background: #e8f5e9; border-radius: 8px;
 }
 
-.input:focus { border-color: #ff6b35; }
+/* RESTAURANT NOTE */
+.restaurant-note {
+  background: #fff8e1; border: 1px solid #ffe082;
+  border-radius: 10px; padding: 12px 14px;
+  font-size: 13px; color: #f57f17; margin-bottom: 16px;
+}
 
+/* BUTTON */
 .btn {
-  padding: 12px;
-  background: #ff6b35;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-size: 16px;
-  cursor: pointer;
+  width: 100%; padding: 14px; background: #00A082; color: #fff;
+  border: none; border-radius: 50px; font-size: 16px; font-weight: 700;
+  cursor: pointer; margin-top: 8px; transition: background 0.2s;
+  display: flex; align-items: center; justify-content: center; min-height: 50px;
 }
+.btn:hover:not(:disabled) { background: #008066; }
+.btn:disabled { background: #b0d8d0; cursor: not-allowed; }
+.spinner {
+  width: 22px; height: 22px; border: 3px solid rgba(255,255,255,0.4);
+  border-top-color: #fff; border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
 
-.btn:hover { background: #e55a25; }
-.error { color: red; font-size: 14px; }
-a { color: #ff6b35; }
+.switch { text-align: center; font-size: 14px; color: #888; margin: 16px 0 0; }
+.switch a { color: #00A082; font-weight: 700; text-decoration: none; }

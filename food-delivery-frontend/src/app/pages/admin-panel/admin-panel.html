@@ -1,0 +1,200 @@
+<!-- src/app/pages/admin-panel/admin-panel.html -->
+<div class="admin-page">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <span>🍕</span>
+      <span>FoodGo Admin</span>
+    </div>
+
+    <nav class="sidebar-nav">
+      <button class="nav-item" [class.active]="activeTab==='dashboard'" (click)="activeTab='dashboard'">
+        📊 Дашборд
+      </button>
+      <button class="nav-item" [class.active]="activeTab==='orders'" (click)="activeTab='orders'">
+        📦 Тапсырыстар
+        <span class="badge" *ngIf="stats.pendingOrders > 0">{{ stats.pendingOrders }}</span>
+      </button>
+      <button class="nav-item" [class.active]="activeTab==='restaurants'" (click)="activeTab='restaurants'">
+        🍽️ Рестораттар
+      </button>
+    </nav>
+
+    <button class="logout-btn" (click)="logout()">🚪 Шығу</button>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main">
+
+    <!-- LOADING -->
+    <div *ngIf="loading" class="loading-wrap">
+      <div class="spinner"></div>
+    </div>
+
+    <!-- ===== DASHBOARD ===== -->
+    <div *ngIf="!loading && activeTab === 'dashboard'">
+      <h1 class="page-title">📊 Дашборд</h1>
+
+      <!-- STATS CARDS -->
+      <div class="stats-grid">
+        <div class="stat-card green">
+          <div class="stat-icon">📦</div>
+          <div class="stat-info">
+            <div class="stat-value">{{ stats.totalOrders }}</div>
+            <div class="stat-label">Барлық тапсырыстар</div>
+          </div>
+        </div>
+        <div class="stat-card blue">
+          <div class="stat-icon">💰</div>
+          <div class="stat-info">
+            <div class="stat-value">{{ stats.totalRevenue | number }} ₸</div>
+            <div class="stat-label">Жалпы табыс</div>
+          </div>
+        </div>
+        <div class="stat-card orange">
+          <div class="stat-icon">⏳</div>
+          <div class="stat-info">
+            <div class="stat-value">{{ stats.pendingOrders }}</div>
+            <div class="stat-label">Белсенді тапсырыстар</div>
+          </div>
+        </div>
+        <div class="stat-card purple">
+          <div class="stat-icon">🍽️</div>
+          <div class="stat-info">
+            <div class="stat-value">{{ restaurants.length }}</div>
+            <div class="stat-label">Рестораттар</div>
+          </div>
+        </div>
+        <div class="stat-card teal">
+          <div class="stat-icon">🎉</div>
+          <div class="stat-info">
+            <div class="stat-value">{{ stats.deliveredOrders }}</div>
+            <div class="stat-label">Жеткізілді</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RECENT ORDERS -->
+      <div class="section">
+        <h2 class="section-title">🕐 Соңғы тапсырыстар</h2>
+        <div class="table-wrap">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Клиент</th>
+                <th>Ресторан</th>
+                <th>Сома</th>
+                <th>Статус</th>
+                <th>Уақыт</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let order of orders.slice(0, 10)">
+                <td><strong>#{{ order.id }}</strong></td>
+                <td>{{ order.customer_name || 'Клиент' }}</td>
+                <td>{{ order.restaurant_name || '—' }}</td>
+                <td>{{ order.total_price | number }} ₸</td>
+                <td><span class="status-chip" [class]="getStatusClass(order.status)">{{ getStatusLabel(order.status) }}</span></td>
+                <td>{{ order.created_at | date:'dd.MM HH:mm' }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== ORDERS ===== -->
+    <div *ngIf="!loading && activeTab === 'orders'">
+      <h1 class="page-title">📦 Барлық тапсырыстар</h1>
+
+      <!-- FILTERS -->
+      <div class="filters-row">
+        <input
+          type="text"
+          [(ngModel)]="orderSearch"
+          (input)="filterOrders()"
+          placeholder="🔍 Іздеу..."
+          class="search-input"
+        />
+        <select [(ngModel)]="orderStatusFilter" (change)="filterOrders()" class="status-select">
+          <option value="all">Барлығы</option>
+          <option value="pending">Күтілуде</option>
+          <option value="confirmed">Расталды</option>
+          <option value="cooking">Дайындалуда</option>
+          <option value="delivery">Жолда</option>
+          <option value="delivered">Жеткізілді</option>
+          <option value="cancelled">Бас тартылды</option>
+        </select>
+      </div>
+
+      <div class="results-info">{{ filteredOrders.length }} тапсырыс</div>
+
+      <div class="table-wrap">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Клиент</th>
+              <th>Ресторан</th>
+              <th>Сома</th>
+              <th>Статус</th>
+              <th>Уақыт</th>
+              <th>Әрекет</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let order of filteredOrders">
+              <td><strong>#{{ order.id }}</strong></td>
+              <td>{{ order.customer_name || 'Клиент' }}</td>
+              <td>{{ order.restaurant_name || '—' }}</td>
+              <td>{{ order.total_price | number }} ₸</td>
+              <td><span class="status-chip" [class]="getStatusClass(order.status)">{{ getStatusLabel(order.status) }}</span></td>
+              <td>{{ order.created_at | date:'dd.MM HH:mm' }}</td>
+              <td>
+                <select class="action-select" (change)="updateOrderStatus(order.id, $any($event.target).value)" [value]="order.status">
+                  <option value="pending">Күтілуде</option>
+                  <option value="confirmed">Растау</option>
+                  <option value="cooking">Дайындалуда</option>
+                  <option value="delivery">Жолда</option>
+                  <option value="delivered">Жеткізілді</option>
+                  <option value="cancelled">Бас тарту</option>
+                </select>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div *ngIf="filteredOrders.length === 0" class="empty-state">
+        <p>📭 Тапсырыстар жоқ</p>
+      </div>
+    </div>
+
+    <!-- ===== RESTAURANTS ===== -->
+    <div *ngIf="!loading && activeTab === 'restaurants'">
+      <h1 class="page-title">🍽️ Рестораттар</h1>
+
+      <div class="restaurants-grid">
+        <div *ngFor="let r of restaurants" class="restaurant-admin-card">
+          <div class="rest-header">
+            <div class="rest-info">
+              <h3>{{ r.name }}</h3>
+              <p>📍 {{ r.address }}</p>
+            </div>
+            <div class="rest-status" [class.open]="r.is_open" [class.closed]="!r.is_open">
+              {{ r.is_open ? '🟢 Ашық' : '🔴 Жабық' }}
+            </div>
+          </div>
+          <div class="rest-actions">
+            <button class="toggle-btn" (click)="toggleRestaurant(r)">
+              {{ r.is_open ? 'Жабу' : 'Ашу' }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>

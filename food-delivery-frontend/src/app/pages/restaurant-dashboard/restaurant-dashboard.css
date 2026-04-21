@@ -1,0 +1,159 @@
+/* src/app/pages/restaurant-dashboard/restaurant-dashboard.css */
+.dashboard { display: flex; min-height: 100vh; background: #f5f5f5; }
+
+/* SIDEBAR */
+.sidebar {
+  width: 240px; background: #1a1a2e; color: #fff;
+  display: flex; flex-direction: column; padding: 24px 0;
+  position: fixed; top: 0; left: 0; bottom: 0; z-index: 100;
+}
+.sidebar-logo {
+  display: flex; align-items: center; gap: 10px;
+  padding: 0 20px 16px; font-size: 16px; font-weight: 800;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+.restaurant-status {
+  display: flex; align-items: center; gap: 8px;
+  padding: 12px 20px; font-size: 13px; color: rgba(255,255,255,0.7);
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+.status-dot {
+  width: 8px; height: 8px; border-radius: 50%; background: #f44336;
+}
+.status-dot.open { background: #4caf50; }
+.toggle-status-btn {
+  margin-left: auto; padding: 4px 10px;
+  border-radius: 20px; border: 1px solid rgba(255,255,255,0.3);
+  background: transparent; color: #fff; font-size: 11px; cursor: pointer;
+  transition: all 0.2s;
+}
+.toggle-status-btn:hover { background: rgba(255,255,255,0.1); }
+.sidebar-nav { flex: 1; padding: 16px 12px; display: flex; flex-direction: column; gap: 4px; }
+.nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 16px; border-radius: 12px; border: none;
+  background: transparent; color: rgba(255,255,255,0.7);
+  font-size: 14px; font-weight: 500; cursor: pointer; text-align: left;
+  transition: all 0.2s;
+}
+.nav-item:hover { background: rgba(255,255,255,0.1); color: #fff; }
+.nav-item.active { background: #00A082; color: #fff; }
+.badge {
+  margin-left: auto; background: #ff5252; color: #fff;
+  border-radius: 50%; width: 20px; height: 20px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700;
+}
+.logout-btn {
+  margin: 12px; padding: 12px 16px; border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.2); background: transparent;
+  color: rgba(255,255,255,0.7); font-size: 14px; cursor: pointer;
+}
+.logout-btn:hover { background: rgba(255,255,255,0.1); color: #fff; }
+
+/* MAIN */
+.main { flex: 1; margin-left: 240px; padding: 32px; overflow-y: auto; }
+.page-title { font-size: 26px; font-weight: 800; margin: 0 0 24px; color: #1a1a1a; }
+
+.loading-wrap { display: flex; justify-content: center; align-items: center; height: 60vh; }
+.spinner { width: 44px; height: 44px; border: 4px solid #f0f0f0; border-top-color: #00A082; border-radius: 50%; animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.no-restaurant { text-align: center; padding: 80px 20px; }
+.no-icon { font-size: 64px; margin-bottom: 16px; }
+.no-restaurant h2 { font-size: 22px; font-weight: 700; margin: 0 0 8px; }
+.no-restaurant p { color: #888; }
+
+/* ORDERS */
+.orders-list { display: flex; flex-direction: column; gap: 16px; }
+.order-card {
+  background: #fff; border-radius: 16px; padding: 20px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+  border-left: 4px solid #e0e0e0; transition: border-color 0.3s;
+}
+.order-card.order-pending { border-left-color: #FF9800; }
+.order-card.order-cooking { border-left-color: #2196F3; }
+.order-card.order-delivered { border-left-color: #00A082; }
+.order-card.order-cancelled { border-left-color: #f44336; opacity: 0.7; }
+
+.order-header { display: flex; justify-content: space-between; margin-bottom: 12px; }
+.order-header h3 { font-size: 18px; font-weight: 800; margin: 0 0 4px; }
+.order-customer { font-size: 13px; color: #888; margin: 0; }
+.order-right { text-align: right; }
+.order-time { font-size: 12px; color: #aaa; margin: 4px 0 0; }
+
+.status-badge { padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+.s-pending { background: #fff8e1; color: #f59e0b; }
+.s-confirmed { background: #e8f5e9; color: #2e7d32; }
+.s-cooking { background: #e3f2fd; color: #1565c0; }
+.s-delivery { background: #f3e5f5; color: #7b1fa2; }
+.s-delivered { background: #e8f5e9; color: #00A082; }
+.s-cancelled { background: #ffebee; color: #c62828; }
+
+.order-items { border-top: 1px solid #f5f5f5; padding: 12px 0; display: flex; flex-direction: column; gap: 6px; }
+.order-item-row { display: flex; align-items: center; gap: 8px; font-size: 14px; }
+.order-item-row span:first-child { flex: 1; }
+.item-qty { color: #888; }
+.item-price { font-weight: 600; color: #333; }
+
+.order-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 12px; }
+.order-total { font-size: 18px; color: #00A082; }
+.order-actions { display: flex; gap: 8px; }
+.confirm-btn { padding: 8px 18px; background: #00A082; color: #fff; border: none; border-radius: 50px; font-size: 13px; font-weight: 600; cursor: pointer; }
+.confirm-btn:hover { background: #008066; }
+.cancel-btn { padding: 8px 18px; background: #fff; color: #f44336; border: 2px solid #f44336; border-radius: 50px; font-size: 13px; font-weight: 600; cursor: pointer; }
+
+/* MENU */
+.dishes-list { display: flex; flex-direction: column; gap: 12px; }
+.dish-manage-card {
+  background: #fff; border-radius: 16px; padding: 20px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.07); transition: opacity 0.3s;
+}
+.dish-manage-card.unavailable { opacity: 0.6; }
+.dish-main { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; }
+.dish-info { flex: 1; }
+.dish-info h4 { font-size: 16px; font-weight: 700; margin: 0 0 4px; }
+.dish-info p { font-size: 13px; color: #888; margin: 0 0 8px; }
+.dish-price-row { display: flex; align-items: center; gap: 8px; }
+.dish-price { font-size: 16px; font-weight: 700; color: #1a1a1a; }
+.dish-price.discounted { color: #00A082; }
+.original-price { font-size: 13px; color: #aaa; text-decoration: line-through; }
+.discount-badge { background: #ff5252; color: #fff; padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+
+.dish-controls { display: flex; flex-direction: column; gap: 10px; align-items: flex-end; }
+.stock-control { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #555; }
+.stock-input { width: 70px; padding: 6px 10px; border: 1.5px solid #e0e0e0; border-radius: 8px; font-size: 13px; outline: none; text-align: center; }
+.stock-input:focus { border-color: #00A082; }
+
+.dish-buttons { display: flex; gap: 6px; }
+.toggle-dish-btn { padding: 6px 12px; border-radius: 20px; border: none; font-size: 12px; font-weight: 600; cursor: pointer; background: #ffebee; color: #f44336; transition: all 0.2s; }
+.toggle-dish-btn.active { background: #e8f5e9; color: #00A082; }
+.discount-btn { padding: 6px 12px; border-radius: 20px; border: none; font-size: 12px; font-weight: 600; cursor: pointer; background: #fff8e1; color: #f59e0b; }
+.delete-btn { padding: 6px 10px; border-radius: 20px; border: none; font-size: 14px; cursor: pointer; background: #ffebee; color: #f44336; }
+
+/* DISCOUNT FORM */
+.discount-form { margin-top: 14px; padding: 14px; background: #fff8e1; border-radius: 10px; }
+.discount-form p { font-size: 13px; font-weight: 600; margin: 0 0 10px; color: #555; }
+.discount-row { display: flex; align-items: center; gap: 8px; }
+.discount-input { width: 80px; padding: 8px 12px; border: 1.5px solid #e0e0e0; border-radius: 8px; font-size: 14px; outline: none; }
+.discount-input:focus { border-color: #00A082; }
+.apply-btn { padding: 8px 16px; background: #00A082; color: #fff; border: none; border-radius: 50px; font-size: 13px; font-weight: 600; cursor: pointer; }
+.cancel-discount-btn { padding: 8px 16px; background: #fff; color: #888; border: 1px solid #e0e0e0; border-radius: 50px; font-size: 13px; cursor: pointer; }
+.remove-discount-btn { margin-top: 8px; padding: 6px 14px; background: #ffebee; color: #f44336; border: none; border-radius: 20px; font-size: 12px; cursor: pointer; }
+
+/* ADD DISH FORM */
+.add-dish-form { background: #fff; border-radius: 16px; padding: 28px; max-width: 600px; box-shadow: 0 2px 12px rgba(0,0,0,0.07); }
+.field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+.field label { font-size: 13px; font-weight: 600; color: #444; }
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.input { padding: 12px 16px; border: 1.5px solid #e0e0e0; border-radius: 12px; font-size: 15px; outline: none; transition: border-color 0.2s; }
+.input:focus { border-color: #00A082; }
+.textarea { padding: 12px 16px; border: 1.5px solid #e0e0e0; border-radius: 12px; font-size: 15px; outline: none; resize: vertical; font-family: inherit; }
+.textarea:focus { border-color: #00A082; }
+.add-btn { width: 100%; padding: 14px; background: #00A082; color: #fff; border: none; border-radius: 50px; font-size: 16px; font-weight: 700; cursor: pointer; margin-top: 8px; transition: background 0.2s; }
+.add-btn:hover:not(:disabled) { background: #008066; }
+.add-btn:disabled { background: #b0d8d0; cursor: not-allowed; }
+
+.error-msg { background: #fff0f0; border: 1px solid #ffcdd2; border-radius: 10px; padding: 10px 14px; font-size: 13px; color: #c62828; margin-bottom: 16px; }
+.success-msg { background: #f0faf8; border: 1px solid #b2dfdb; border-radius: 10px; padding: 10px 14px; font-size: 13px; color: #00A082; margin-bottom: 16px; }
+.empty-state { text-align: center; padding: 60px 20px; color: #888; font-size: 16px; }

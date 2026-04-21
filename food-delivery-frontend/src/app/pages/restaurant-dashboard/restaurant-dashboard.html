@@ -1,0 +1,222 @@
+<!-- src/app/pages/restaurant-dashboard/restaurant-dashboard.html -->
+<div class="dashboard">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <span>🍽️</span>
+      <span>{{ restaurant?.name || 'Ресторан' }}</span>
+    </div>
+
+    <div class="restaurant-status" *ngIf="restaurant">
+      <span class="status-dot" [class.open]="restaurant.is_open"></span>
+      <span>{{ restaurant.is_open ? 'Ашық' : 'Жабық' }}</span>
+      <button class="toggle-status-btn" (click)="toggleRestaurant()">
+        {{ restaurant.is_open ? 'Жабу' : 'Ашу' }}
+      </button>
+    </div>
+
+    <nav class="sidebar-nav">
+      <button class="nav-item" [class.active]="activeTab==='orders'" (click)="activeTab='orders'">
+        📦 Тапсырыстар
+        <span class="badge" *ngIf="getPendingCount() > 0">{{ getPendingCount() }}</span>
+      </button>
+      <button class="nav-item" [class.active]="activeTab==='menu'" (click)="activeTab='menu'">
+        🍽️ Мәзір
+      </button>
+      <button class="nav-item" [class.active]="activeTab==='add'" (click)="activeTab='add'">
+        ➕ Тағам қосу
+      </button>
+    </nav>
+
+    <button class="logout-btn" (click)="logout()">🚪 Шығу</button>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <div *ngIf="loading" class="loading-wrap">
+      <div class="spinner"></div>
+    </div>
+
+    <div *ngIf="!loading && !restaurant" class="no-restaurant">
+      <div class="no-icon">🍽️</div>
+      <h2>Ресторан табылмады</h2>
+      <p>Сізге ресторан тіркелмеген. Администраторға хабарласыңыз.</p>
+    </div>
+
+    <!-- ===== ЗАКАЗЫ ===== -->
+    <div *ngIf="!loading && restaurant && activeTab === 'orders'">
+      <h1 class="page-title">📦 Тапсырыстар</h1>
+
+      <div *ngIf="orders.length === 0" class="empty-state">
+        <p>📭 Тапсырыстар жоқ</p>
+      </div>
+
+      <div class="orders-list">
+        <div *ngFor="let order of orders" class="order-card" [class]="'order-' + order.status">
+          <div class="order-header">
+            <div>
+              <h3>#{{ order.id }}</h3>
+              <p class="order-customer">👤 {{ order.customer_name || 'Клиент' }}</p>
+            </div>
+            <div class="order-right">
+              <span class="status-badge" [class]="'s-' + order.status">
+                {{ getStatusLabel(order.status) }}
+              </span>
+              <p class="order-time">{{ order.created_at | date:'HH:mm' }}</p>
+            </div>
+          </div>
+
+          <div class="order-items">
+            <div *ngFor="let item of order.items" class="order-item-row">
+              <span>{{ item.dish_name }}</span>
+              <span class="item-qty">x{{ item.quantity }}</span>
+              <span class="item-price">{{ item.price | number }} ₸</span>
+            </div>
+          </div>
+
+          <div class="order-footer">
+            <strong class="order-total">{{ order.total_price | number }} ₸</strong>
+            <div class="order-actions" *ngIf="order.status === 'pending' || order.status === 'confirmed'">
+              <button
+                *ngIf="order.status === 'pending'"
+                (click)="confirmOrder(order.id)"
+                class="confirm-btn">
+                ✅ Растау
+              </button>
+              <button
+                *ngIf="order.status === 'pending'"
+                (click)="cancelOrder(order.id)"
+                class="cancel-btn">
+                ❌ Бас тарту
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== МЕНЮ ===== -->
+    <div *ngIf="!loading && restaurant && activeTab === 'menu'">
+      <h1 class="page-title">🍽️ Мәзір басқару</h1>
+
+      <div class="dishes-list">
+        <div *ngFor="let dish of dishes" class="dish-manage-card" [class.unavailable]="!dish.is_available">
+
+          <div class="dish-main">
+            <div class="dish-info">
+              <h4>{{ dish.name }}</h4>
+              <p>{{ dish.description }}</p>
+              <div class="dish-price-row">
+                <span class="dish-price" [class.discounted]="dish.original_price">
+                  {{ dish.price | number }} ₸
+                </span>
+                <span class="original-price" *ngIf="dish.original_price">
+                  {{ dish.original_price | number }} ₸
+                </span>
+                <span class="discount-badge" *ngIf="dish.discount">
+                  -{{ dish.discount }}%
+                </span>
+              </div>
+            </div>
+
+            <div class="dish-controls">
+              <!-- ОСТАТОК -->
+              <div class="stock-control">
+                <label>Қалдық:</label>
+                <input
+                  type="number"
+                  [(ngModel)]="dish.stock"
+                  min="0"
+                  class="stock-input"
+                  (change)="updateStock(dish)"
+                />
+              </div>
+
+              <!-- КНОПКИ -->
+              <div class="dish-buttons">
+                <button
+                  class="toggle-dish-btn"
+                  [class.active]="dish.is_available"
+                  (click)="toggleDish(dish)">
+                  {{ dish.is_available ? '✅ Бар' : '❌ Жоқ' }}
+                </button>
+
+                <button
+                  class="discount-btn"
+                  (click)="discountDishId = dish.id; discountValue = 0">
+                  🏷️ Жеңілдік
+                </button>
+
+                <button class="delete-btn" (click)="deleteDish(dish)">🗑️</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- СКИДКА ФОРМА -->
+          <div *ngIf="discountDishId === dish.id" class="discount-form">
+            <p>Жеңілдік пайызы:</p>
+            <div class="discount-row">
+              <input
+                type="number"
+                [(ngModel)]="discountValue"
+                min="1" max="99"
+                placeholder="мысалы: 20"
+                class="discount-input"
+              />
+              <span>%</span>
+              <button (click)="applyDiscount(dish)" class="apply-btn">Қолдану</button>
+              <button (click)="discountDishId = null" class="cancel-discount-btn">Болдырмау</button>
+            </div>
+            <button *ngIf="dish.original_price" (click)="removeDiscount(dish)" class="remove-discount-btn">
+              Жеңілдікті алу
+            </button>
+          </div>
+
+        </div>
+      </div>
+
+      <div *ngIf="dishes.length === 0" class="empty-state">
+        <p>🍽️ Мәзір бос — тағам қосыңыз</p>
+      </div>
+    </div>
+
+    <!-- ===== ДОБАВИТЬ БЛЮДО ===== -->
+    <div *ngIf="!loading && restaurant && activeTab === 'add'">
+      <h1 class="page-title">➕ Жаңа тағам қосу</h1>
+
+      <div class="add-dish-form">
+        <div *ngIf="dishError" class="error-msg">⚠️ {{ dishError }}</div>
+        <div *ngIf="dishSuccess" class="success-msg">✅ {{ dishSuccess }}</div>
+
+        <div class="field">
+          <label>Тағам атауы *</label>
+          <input type="text" [(ngModel)]="newDish.name" placeholder="мысалы: Чикен Бургер" class="input" />
+        </div>
+
+        <div class="field">
+          <label>Сипаттама</label>
+          <textarea [(ngModel)]="newDish.description" placeholder="Тағам туралы..." class="textarea" rows="3"></textarea>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label>Баға (₸) *</label>
+            <input type="number" [(ngModel)]="newDish.price" placeholder="2490" min="0" class="input" />
+          </div>
+          <div class="field">
+            <label>Бастапқы қалдық</label>
+            <input type="number" [(ngModel)]="newDish.stock" placeholder="999" min="0" class="input" />
+          </div>
+        </div>
+
+        <button (click)="addDish()" class="add-btn" [disabled]="addingDish">
+          <span *ngIf="!addingDish">➕ Тағам қосу</span>
+          <span *ngIf="addingDish">Қосылуда...</span>
+        </button>
+      </div>
+    </div>
+
+  </main>
+</div>

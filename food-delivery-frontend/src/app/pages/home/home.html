@@ -1,3 +1,4 @@
+<!-- src/app/pages/home/home.html -->
 <div class="home-container">
   <nav class="navbar">
     <div class="logo">🍕 FoodGo</div>
@@ -34,7 +35,6 @@
     </div>
   </div>
 
-
   <div class="features">
     <div class="feature-card">
       <div class="feature-img">🍽️</div>
@@ -48,11 +48,153 @@
       <p>30 минут ішінде есігіңізге жеткіземіз</p>
       <button routerLink="/restaurants" class="feature-btn">Тапсырыс беру</button>
     </div>
-    <div class="feature-card">
+    <div class="feature-card courier-card-feature">
       <div class="feature-img">👨‍💼</div>
       <h3>Курьер болу</h3>
       <p>Өз кестеңізді өзіңіз белгілеңіз және жақсы табыс табыңыз</p>
-      <button class="feature-btn">Тіркелу</button>
+      <button class="feature-btn courier-btn" (click)="openCourierModal()">Тіркелу</button>
     </div>
+  </div>
+</div>
+
+<!-- ===== COURIER MODAL ===== -->
+<div class="modal-backdrop" *ngIf="showCourierModal" (click)="onBackdrop($event)">
+  <div class="courier-modal">
+
+    <!-- CLOSE -->
+    <button class="close-btn" (click)="closeCourierModal()">✕</button>
+
+    <!-- STEP INDICATOR -->
+    <div class="steps-indicator" *ngIf="courierStep < 3">
+      <div class="step-dot" [class.active]="courierStep >= 1" [class.done]="courierStep > 1">1</div>
+      <div class="step-line" [class.done]="courierStep > 1"></div>
+      <div class="step-dot" [class.active]="courierStep >= 2">2</div>
+    </div>
+
+    <!-- ===== ШАГ 1 — АНКЕТА ===== -->
+    <div *ngIf="courierStep === 1">
+      <div class="modal-icon">🛵</div>
+      <h2>Курьер болу</h2>
+      <p class="modal-sub">Анкетаны толтырыңыз — бұл 2 минут алады</p>
+
+      <div *ngIf="courierError" class="error-msg">⚠️ {{ courierError }}</div>
+
+      <div class="field">
+        <label>Аты-жөніңіз *</label>
+        <input type="text" [(ngModel)]="courierName" placeholder="Асан Сейтов" class="input" />
+      </div>
+
+      <div class="field">
+        <label>Телефон нөмірі *</label>
+        <input type="tel" [(ngModel)]="courierPhone" placeholder="+7 701 234 5678" class="input" />
+      </div>
+
+      <div class="field">
+        <label>Жасыңыз *</label>
+        <input type="number" [(ngModel)]="courierAge" placeholder="18" min="18" max="65" class="input" />
+      </div>
+
+      <div class="field">
+        <label>Қала</label>
+        <select [(ngModel)]="courierCity" class="input">
+          <option value="Алматы">Алматы</option>
+          <option value="Астана">Астана</option>
+          <option value="Шымкент">Шымкент</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Көлік түрі</label>
+        <div class="vehicle-grid">
+          <div class="vehicle-option" [class.active]="courierVehicle==='scooter'" (click)="courierVehicle='scooter'">
+            🛵<span>Самокат/Скутер</span>
+          </div>
+          <div class="vehicle-option" [class.active]="courierVehicle==='bike'" (click)="courierVehicle='bike'">
+            🚴<span>Велосипед</span>
+          </div>
+          <div class="vehicle-option" [class.active]="courierVehicle==='car'" (click)="courierVehicle='car'">
+            🚗<span>Автомобиль</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Жеткізу тәжірибесі бар ма?</label>
+        <div class="radio-group">
+          <label class="radio-label">
+            <input type="radio" [(ngModel)]="courierExp" value="no" /> Жоқ, жаңадан бастаймын
+          </label>
+          <label class="radio-label">
+            <input type="radio" [(ngModel)]="courierExp" value="yes" /> Иә, тәжірибем бар
+          </label>
+        </div>
+      </div>
+
+      <div class="benefits-box">
+        <h4>🎁 Курьер болудың артықшылықтары:</h4>
+        <ul>
+          <li>✅ Еркін кесте — өзіңіз таңдайсыз</li>
+          <li>✅ Жұмысты бірден бастауға болады</li>
+          <li>✅ Тапсырыс санына байланысты табыс</li>
+          <li>✅ Апта сайын төлем</li>
+        </ul>
+      </div>
+
+      <button class="next-btn" (click)="nextStep()">Келесі →</button>
+    </div>
+
+    <!-- ===== ШАГ 2 — АККАУНТ ===== -->
+    <div *ngIf="courierStep === 2">
+      <div class="modal-icon">👤</div>
+      <h2>Аккаунт жасау</h2>
+      <p class="modal-sub">Кіру үшін логин мен пароль жасаңыз</p>
+
+      <div *ngIf="courierError" class="error-msg">⚠️ {{ courierError }}</div>
+
+      <div class="field">
+        <label>Логин *</label>
+        <input type="text" [(ngModel)]="courierUsername" placeholder="courier_asan" class="input" />
+      </div>
+
+      <div class="field">
+        <label>Email *</label>
+        <input type="email" [(ngModel)]="courierEmail" placeholder="asan@gmail.com" class="input" />
+      </div>
+
+      <div class="field">
+        <label>Пароль *</label>
+        <input type="password" [(ngModel)]="courierPassword" placeholder="Кемінде 6 символ" class="input" />
+      </div>
+
+      <div class="field">
+        <label>Парольді растау *</label>
+        <input type="password" [(ngModel)]="courierPassword2" placeholder="Парольді қайталаңыз" class="input" />
+      </div>
+
+      <div class="btn-row">
+        <button class="back-btn" (click)="courierStep=1">← Артқа</button>
+        <button class="next-btn" (click)="submitCourier()" [disabled]="courierLoading">
+          <span *ngIf="!courierLoading">Тіркелу ✓</span>
+          <span *ngIf="courierLoading">Жіберілуде...</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- ===== ШАГ 3 — УСПЕХ ===== -->
+    <div *ngIf="courierStep === 3" class="success-step">
+      <div class="success-icon">🎉</div>
+      <h2>Сәтті тіркелдіңіз!</h2>
+      <p>Аккаунтыңыз жасалды. Енді тапсырыстарды қабылдай аласыз!</p>
+
+      <div class="account-info">
+        <p>👤 Логин: <strong>{{ courierUsername }}</strong></p>
+        <p>🔑 Парольді есте сақтаңыз</p>
+      </div>
+
+      <button class="next-btn" (click)="goCourierDashboard()">
+        🛵 Жұмысты бастау →
+      </button>
+    </div>
+
   </div>
 </div>

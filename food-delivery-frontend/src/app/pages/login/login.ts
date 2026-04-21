@@ -1,7 +1,8 @@
+// src/app/pages/login/login.ts
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { AuthService } from '../../services/auth';
+import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -15,17 +16,61 @@ export class LoginComponent {
   username = '';
   password = '';
   error = '';
+  loading = false;
 
-  constructor(private authService: AuthService, private router: Router) {}
+  private apiUrl = 'http://127.0.0.1:8000/api';
+
+  constructor(private http: HttpClient, private router: Router) {}
 
   onLogin() {
-    this.authService.login(this.username, this.password).subscribe({
+    if (!this.username || !this.password) {
+      this.error = 'Логин мен парольді енгізіңіз';
+      return;
+    }
+    this.loading = true;
+    this.error = '';
+
+    // Шаг 1 — получаем токен
+    this.http.post<any>(`${this.apiUrl}/login/`, {
+      username: this.username,
+      password: this.password
+    }).subscribe({
       next: (res) => {
         localStorage.setItem('token', res.token);
-        this.router.navigate(['/home']);
+        localStorage.setItem('username', this.username);
+
+        // Шаг 2 — получаем роль
+        this.http.get<any>(`${this.apiUrl}/me/`, {
+          headers: { Authorization: `Token ${res.token}` }
+        }).subscribe({
+          next: (user) => {
+            const role = user.profile?.role || 'customer';
+            localStorage.setItem('role', role);
+            this.loading = false;
+
+            // Редирект по роли
+            if (role === 'admin') {
+              this.router.navigate(['/admin-panel']);
+            } else if (role === 'courier') {
+              this.router.navigate(['/courier-dashboard']);
+            } else if (role === 'restaurant') {
+              this.router.navigate(['/restaurant-dashboard']);
+            } else {
+              this.router.navigate(['/home']);
+            }
+          },
+          error: () => {
+            // Если /me/ не работает — просто идём на home
+            this.loading = false;
+            this.router.navigate(['/home']);
+          }
+        });
       },
-      error: () => {
-        this.error = 'Неверный логин или пароль';
+      error: (err) => {
+        this.error = err.status === 400
+          ? 'Логин немесе пароль қате'
+          : 'Қате орын алды. Қайталап көріңіз.';
+        this.loading = false;
       }
     });
   }

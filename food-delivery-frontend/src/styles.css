@@ -1,1 +1,16 @@
-.leaflet-container { z-index: 1 !important; }/* You can add global styles to this file, and also import other style files */
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.logo img {
+    width: 40px;
+    height: 40px;
+}
+
+.logo span {
+    font-size: 28px;
+    font-weight: bold;
+    color: #17b68a;
+}
