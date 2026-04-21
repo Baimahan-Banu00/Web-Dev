@@ -1,6 +1,6 @@
 // src/app/pages/restaurant-detail/restaurant-detail.ts
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
@@ -31,6 +31,7 @@ export class RestaurantDetailComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
+    private router: Router,
     private http: HttpClient,
     private orderService: OrderService
   ) {}
@@ -141,11 +142,17 @@ export class RestaurantDetailComponent implements OnInit {
     };
 
     this.orderService.createOrder(orderData).subscribe({
-      next: () => {
-        this.orderSuccess = true;
-        this.cart = [];
+      next: (res: any) => {
         this.orderLoading = false;
-        setTimeout(() => this.orderSuccess = false, 5000);
+        this.cart = [];
+        this.cartOpen = false;
+        // Переходим на страницу оплаты
+        this.router.navigate(['/payment'], {
+          state: {
+            total: res.total_price || 0,
+            orderId: res.id || 0
+          }
+        });
       },
       error: (err: any) => {
         this.orderError = err.status === 401

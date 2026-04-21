@@ -1,0 +1,142 @@
+<!-- src/app/pages/payment/payment.html -->
+<div class="page">
+
+  <!-- SUCCESS STATE -->
+  <div *ngIf="success" class="success-page">
+    <div class="success-icon">✅</div>
+    <h2>Төлем сәтті өтті!</h2>
+    <p>Тапсырысыңыз қабылданды және дайындалуда</p>
+    <div class="success-order" *ngIf="orderId">
+      Тапсырыс №{{ orderId }}
+    </div>
+    <div class="success-actions">
+      <button (click)="goOrders()" class="btn-primary">Тапсырыстарымды көру</button>
+      <button (click)="goHome()" class="btn-secondary">Басты бетке</button>
+    </div>
+  </div>
+
+  <!-- PAYMENT FORM -->
+  <div *ngIf="!success" class="payment-wrap">
+
+    <nav class="navbar">
+      <a routerLink="/restaurants" class="back-btn">← Артқа</a>
+      <span class="navbar-title">Төлем</span>
+      <span></span>
+    </nav>
+
+    <div class="payment-layout">
+
+      <!-- CARD FORM -->
+      <div class="card-form">
+        <h2 class="form-title">Карта деректері</h2>
+
+        <!-- CARD PREVIEW -->
+        <div class="card-preview" [class.visa]="getCardType()==='visa'" [class.mc]="getCardType()==='mastercard'">
+          <div class="card-chip">💳</div>
+          <div class="card-number-preview">
+            {{ cardNumber || '•••• •••• •••• ••••' }}
+          </div>
+          <div class="card-bottom">
+            <div>
+              <div class="card-label">Карта иесі</div>
+              <div class="card-value">{{ cardName || 'АТЫ ЖӨНІ' }}</div>
+            </div>
+            <div>
+              <div class="card-label">Мерзімі</div>
+              <div class="card-value">{{ cardExpiry || 'MM/YY' }}</div>
+            </div>
+            <div class="card-brand" *ngIf="getCardType()==='visa'">VISA</div>
+            <div class="card-brand mc" *ngIf="getCardType()==='mastercard'">MC</div>
+          </div>
+        </div>
+
+        <!-- ERROR -->
+        <div *ngIf="error" class="error-msg">⚠️ {{ error }}</div>
+
+        <!-- INPUTS -->
+        <div class="field">
+          <label>Карта нөмірі</label>
+          <input
+            type="text"
+            [(ngModel)]="cardNumber"
+            (input)="formatCardNumber()"
+            placeholder="0000 0000 0000 0000"
+            maxlength="19"
+            class="input"
+          />
+        </div>
+
+        <div class="field">
+          <label>Карта иесінің аты</label>
+          <input
+            type="text"
+            [(ngModel)]="cardName"
+            placeholder="IVAN IVANOV"
+            class="input"
+            style="text-transform: uppercase"
+          />
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label>Мерзімі</label>
+            <input
+              type="text"
+              [(ngModel)]="cardExpiry"
+              (input)="formatExpiry()"
+              placeholder="MM/YY"
+              maxlength="5"
+              class="input"
+            />
+          </div>
+          <div class="field">
+            <label>CVV</label>
+            <input
+              type="password"
+              [(ngModel)]="cardCvv"
+              placeholder="•••"
+              maxlength="3"
+              class="input"
+            />
+          </div>
+        </div>
+
+        <button (click)="onPay()" class="pay-btn" [disabled]="loading">
+          <span *ngIf="!loading">
+            Төлеу · {{ orderTotal | number }} ₸
+          </span>
+          <span *ngIf="loading" class="spinner-wrap">
+            <span class="spinner"></span> Өңделуде...
+          </span>
+        </button>
+
+        <div class="secure-note">
+          🔒 Қауіпсіз SSL шифрлау арқылы төлем
+        </div>
+      </div>
+
+      <!-- ORDER SUMMARY -->
+      <div class="order-summary">
+        <h3>Тапсырыс мәліметі</h3>
+        <div class="summary-row" *ngIf="orderId">
+          <span>Тапсырыс №</span>
+          <span>#{{ orderId }}</span>
+        </div>
+        <div class="summary-divider"></div>
+        <div class="summary-row total">
+          <span>Жиыны:</span>
+          <strong>{{ orderTotal | number }} ₸</strong>
+        </div>
+        <div class="payment-methods">
+          <p>Қабылданатын карталар:</p>
+          <div class="card-logos">
+            <span class="card-logo">VISA</span>
+            <span class="card-logo">Mastercard</span>
+            <span class="card-logo">Kaspi</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
