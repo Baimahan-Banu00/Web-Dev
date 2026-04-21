@@ -1,49 +1,145 @@
-<div class="container">
+<!-- src/app/pages/restaurant-detail/restaurant-detail.html -->
+
+<!-- AUTH MODAL -->
+<app-auth-modal
+  *ngIf="showAuthModal"
+  (closed)="onAuthClosed()"
+  (success)="onAuthSuccess()"
+></app-auth-modal>
+
+<div class="page" *ngIf="!loading && restaurant">
+
+  <!-- NAVBAR -->
   <nav class="navbar">
-    <h1>🍕 Food Delivery</h1>
-    <div class="nav-links">
-      <a routerLink="/restaurants">← Назад</a>
-      <a routerLink="/orders">Мои заказы</a>
+    <a routerLink="/restaurants" class="back-btn">← Артқа</a>
+    <span class="navbar-title">{{ restaurant.name }}</span>
+    <div class="cart-toggle" (click)="toggleCart()" *ngIf="cart.length > 0">
+      🛒 <span class="cart-count">{{ getTotalCount() }}</span>
     </div>
   </nav>
 
-  <div *ngIf="loading" class="loading">Загрузка...</div>
-
-  <div *ngIf="!loading && restaurant" class="content">
-    <div class="restaurant-header">
-      <h2>🍽️ {{ restaurant.name }}</h2>
-      <p>📍 {{ restaurant.address }}</p>
-      <p>📞 {{ restaurant.phone }}</p>
-    </div>
-
-    <div class="main">
-      <div class="menu">
-        <h3>Меню</h3>
-        <div *ngIf="dishes.length === 0" class="empty">Меню пусто</div>
-        <div class="dishes-grid">
-          <div *ngFor="let dish of dishes" class="dish-card">
-            <h4>{{ dish.name }}</h4>
-            <p>{{ dish.description }}</p>
-            <p class="price">{{ dish.price }} ₸</p>
-            <button (click)="addToCart(dish)" class="btn">Добавить</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="cart">
-        <h3>🛒 Корзина</h3>
-        <div *ngIf="orderSuccess" class="success">Заказ оформлен! ✅</div>
-        <div *ngIf="cart.length === 0 && !orderSuccess" class="empty">Корзина пуста</div>
-        <div *ngFor="let item of cart" class="cart-item">
-          <span>{{ item.name }} x{{ item.quantity }}</span>
-          <span>{{ item.price * item.quantity }} ₸</span>
-          <button (click)="removeFromCart(item)" class="remove-btn">✕</button>
-        </div>
-        <div *ngIf="cart.length > 0" class="total">
-          <strong>Итого: {{ getTotal() }} ₸</strong>
-          <button (click)="placeOrder()" class="order-btn">Заказать</button>
-        </div>
+  <!-- HERO -->
+  <div class="hero">
+    <img [src]="getRestaurantImage()" [alt]="restaurant.name" class="hero-img" />
+    <div class="hero-overlay">
+      <h1 class="hero-title">{{ restaurant.name }}</h1>
+      <p class="hero-addr">📍 {{ restaurant.address }}</p>
+      <div class="hero-meta">
+        <span class="meta-chip">👍 {{ getRating() }}%</span>
+        <span class="meta-chip">⏱ {{ getDeliveryTime() }}</span>
+        <span class="meta-chip" [class.free]="isFree()">
+          {{ isFree() ? '🆓 Тегін жеткізу' : '🛵 ' + getDeliveryFee() }}
+        </span>
       </div>
     </div>
   </div>
+
+  <!-- SUCCESS TOAST -->
+  <div *ngIf="orderSuccess" class="toast success">
+    ✅ Тапсырыс сәтті жіберілді!
+    <a routerLink="/orders">Тапсырыстарды көру →</a>
+  </div>
+
+  <!-- ORDER ERROR -->
+  <div *ngIf="orderError" class="toast error-toast">
+    ⚠️ {{ orderError }}
+  </div>
+
+  <!-- MAIN LAYOUT -->
+  <div class="layout">
+
+    <!-- MENU -->
+    <div class="menu-section">
+      <h2 class="section-title">Мәзір</h2>
+
+      <div *ngIf="dishes.length === 0" class="empty-menu">🍽️ Мәзір бос</div>
+
+      <div class="dishes-list">
+        <div *ngFor="let dish of dishes" class="dish-row" [class.unavailable]="!dish.is_available">
+          <img [src]="getDishImage(dish)" [alt]="dish.name" class="dish-img" loading="lazy" />
+          <div class="dish-info">
+            <h4 class="dish-name">{{ dish.name }}</h4>
+            <p class="dish-desc">{{ dish.description }}</p>
+            <span class="dish-price">{{ dish.price | number }} ₸</span>
+          </div>
+          <div class="dish-actions">
+            <ng-container *ngIf="getCartItem(dish); else addBtn">
+              <div class="qty-control">
+                <button (click)="decreaseQty(dish)" class="qty-btn minus">−</button>
+                <span class="qty-num">{{ getCartItem(dish)!.quantity }}</span>
+                <button (click)="addToCart(dish)" class="qty-btn plus">+</button>
+              </div>
+            </ng-container>
+            <ng-template #addBtn>
+              <button (click)="addToCart(dish)" class="add-btn" [disabled]="!dish.is_available">+</button>
+            </ng-template>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CART -->
+    <div class="cart-section" [class.open]="cartOpen || cart.length > 0">
+      <h3 class="cart-title">🛒 Себет</h3>
+
+      <div *ngIf="cart.length === 0" class="cart-empty">
+        <span>🛒</span>
+        <p>Себет бос — тағам қосыңыз</p>
+      </div>
+
+      <div *ngIf="cart.length > 0">
+        <div *ngFor="let item of cart" class="cart-item">
+          <img [src]="getDishImage(item)" class="cart-item-img" />
+          <div class="cart-item-info">
+            <span class="cart-item-name">{{ item.name }}</span>
+            <span class="cart-item-price">{{ item.price * item.quantity | number }} ₸</span>
+          </div>
+          <div class="qty-control small">
+            <button (click)="decreaseQty(item)" class="qty-btn minus">−</button>
+            <span class="qty-num">{{ item.quantity }}</span>
+            <button (click)="addToCart(item)" class="qty-btn plus">+</button>
+          </div>
+        </div>
+
+        <div class="cart-divider"></div>
+
+        <div class="cart-total-row">
+          <span>Жиыны:</span>
+          <strong>{{ getTotal() | number }} ₸</strong>
+        </div>
+        <div class="cart-fee-row" [class.free]="isFree()">
+          <span>Жеткізу:</span>
+          <span>{{ isFree() ? 'Тегін 🎉' : getDeliveryFee() }}</span>
+        </div>
+
+        <!-- Если не залогинен — показываем подсказку -->
+        <div *ngIf="!isLoggedIn()" class="auth-hint">
+          🔐 Тапсырыс беру үшін жүйеге кіру қажет
+        </div>
+
+        <button (click)="placeOrder()" class="order-btn" [disabled]="orderLoading">
+          <span *ngIf="!orderLoading">
+            {{ isLoggedIn() ? 'Тапсырыс беру' : 'Кіру және тапсырыс беру' }}
+            · {{ getTotal() | number }} ₸
+          </span>
+          <span *ngIf="orderLoading">Жіберілуде...</span>
+        </button>
+
+        <button (click)="clearCart()" class="clear-btn">Себетті тазалау</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- LOADING -->
+<div *ngIf="loading" class="page-loading">
+  <div class="spinner"></div>
+  <p>Жүктелуде...</p>
+</div>
+
+<!-- NOT FOUND -->
+<div *ngIf="!loading && !restaurant" class="page-loading">
+  <p>Ресторан табылмады</p>
+  <a routerLink="/restaurants" class="order-btn">← Артқа</a>
 </div>

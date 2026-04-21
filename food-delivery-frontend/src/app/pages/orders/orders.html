@@ -1,35 +1,55 @@
-<div class="container">
+<!-- src/app/pages/orders/orders.html -->
+<div class="page">
   <nav class="navbar">
-    <h1>🍕 Food Delivery</h1>
+    <a routerLink="/" class="logo">🍕 FoodGo</a>
     <div class="nav-links">
-      <a routerLink="/home">Главная</a>
-      <a routerLink="/restaurants">Рестораны</a>
+      <a routerLink="/restaurants" class="nav-link">Рестораны</a>
     </div>
   </nav>
 
   <div class="content">
-    <h2>Мои заказы</h2>
+    <h2 class="page-title">Менің тапсырыстарым</h2>
 
-    <div *ngIf="loading" class="loading">Загрузка...</div>
-
-    <div *ngIf="!loading && orders.length === 0" class="empty">
-      У вас пока нет заказов
+    <div *ngIf="loading" class="loading-wrap">
+      <div class="spinner"></div>
     </div>
 
-    <div class="orders-list" *ngIf="!loading">
+    <div *ngIf="error && !loading" class="error-msg">⚠️ {{ error }}</div>
+
+    <div *ngIf="!loading && orders.length === 0" class="empty-state">
+      <div class="empty-icon">📦</div>
+      <h3>Тапсырыстар жоқ</h3>
+      <p>Алғашқы тапсырысыңызды жасаңыз!</p>
+      <a routerLink="/restaurants" class="cta-btn">Рестораттарды қарау</a>
+    </div>
+
+    <div class="orders-list" *ngIf="!loading && orders.length > 0">
       <div *ngFor="let order of orders" class="order-card">
         <div class="order-header">
-          <h3>Заказ #{{ order.id }}</h3>
-          <span class="status" [class]="order.status">{{ order.status }}</span>
+          <div>
+            <h3 class="order-id">Тапсырыс #{{ order.id }}</h3>
+            <p class="order-date">📅 {{ order.created_at | date:'dd.MM.yyyy HH:mm' }}</p>
+          </div>
+          <span class="status-badge" [ngClass]="order.status">
+            {{ getStatusLabel(order.status) }}
+          </span>
         </div>
-        <p>🍽️ {{ order.restaurant_name || 'Ресторан' }}</p>
-        <p>📅 {{ order.created_at | date:'dd.MM.yyyy HH:mm' }}</p>
+
+        <div class="order-restaurant">
+          🍽️ {{ order.restaurant_name || 'Ресторан' }}
+        </div>
+
         <div class="order-items">
           <div *ngFor="let item of order.items" class="order-item">
-            {{ item.dish_name }} x{{ item.quantity }} — {{ item.price }} ₸
+            <span>{{ item.dish_name }}</span>
+            <span class="item-qty">x{{ item.quantity }}</span>
+            <span class="item-price">{{ item.price | number }} ₸</span>
           </div>
         </div>
-        <p class="total">Итого: {{ order.total_price }} ₸</p>
+
+        <div class="order-footer">
+          <strong class="order-total">Жиыны: {{ order.total_price | number }} ₸</strong>
+        </div>
       </div>
     </div>
   </div>

@@ -1,0 +1,122 @@
+<!-- src/app/components/auth-modal/auth-modal.html -->
+<div class="modal-backdrop" (click)="onBackdropClick($event)">
+  <div class="modal">
+
+    <!-- CLOSE -->
+    <button class="close-btn" (click)="close()">✕</button>
+
+    <!-- HEADER -->
+    <div class="modal-header">
+      <h2>Қош келдіңіз!</h2>
+      <p>Тапсырыс беру үшін жүйеге кіріңіз</p>
+    </div>
+
+    <!-- TABS -->
+    <div class="tabs">
+      <button
+        class="tab-btn"
+        [class.active]="tab === 'login'"
+        (click)="switchTab('login')"
+      >Кіру</button>
+      <button
+        class="tab-btn"
+        [class.active]="tab === 'register'"
+        (click)="switchTab('register')"
+      >Тіркелу</button>
+    </div>
+
+    <!-- LOGIN FORM -->
+    <div *ngIf="tab === 'login'" class="form">
+      <div *ngIf="loginError" class="error-msg">⚠️ {{ loginError }}</div>
+
+      <div class="field">
+        <label>Логин</label>
+        <input
+          type="text"
+          [(ngModel)]="loginUsername"
+          placeholder="Логиніңізді енгізіңіз"
+          class="input"
+          (keyup.enter)="onLogin()"
+        />
+      </div>
+
+      <div class="field">
+        <label>Пароль</label>
+        <input
+          type="password"
+          [(ngModel)]="loginPassword"
+          placeholder="Парольді енгізіңіз"
+          class="input"
+          (keyup.enter)="onLogin()"
+        />
+      </div>
+
+      <button class="submit-btn" (click)="onLogin()" [disabled]="loginLoading">
+        <span *ngIf="!loginLoading">Кіру</span>
+        <span *ngIf="loginLoading" class="spinner-inline"></span>
+      </button>
+
+      <p class="switch-hint">
+        Аккаунт жоқ па?
+        <button class="link-btn" (click)="switchTab('register')">Тіркелу</button>
+      </p>
+    </div>
+
+    <!-- REGISTER FORM -->
+    <div *ngIf="tab === 'register'" class="form">
+      <div *ngIf="regError" class="error-msg">⚠️ {{ regError }}</div>
+
+      <div class="field">
+        <label>Логин</label>
+        <input
+          type="text"
+          [(ngModel)]="regUsername"
+          placeholder="Логин жасаңыз"
+          class="input"
+        />
+      </div>
+
+      <div class="field">
+        <label>Email</label>
+        <input
+          type="email"
+          [(ngModel)]="regEmail"
+          placeholder="email@example.com"
+          class="input"
+        />
+      </div>
+
+      <div class="field">
+        <label>Пароль</label>
+        <input
+          type="password"
+          [(ngModel)]="regPassword"
+          placeholder="Кемінде 6 символ"
+          class="input"
+        />
+      </div>
+
+      <div class="field">
+        <label>Парольді растау</label>
+        <input
+          type="password"
+          [(ngModel)]="regPassword2"
+          placeholder="Парольді қайталаңыз"
+          class="input"
+          (keyup.enter)="onRegister()"
+        />
+      </div>
+
+      <button class="submit-btn" (click)="onRegister()" [disabled]="regLoading">
+        <span *ngIf="!regLoading">Тіркелу</span>
+        <span *ngIf="regLoading" class="spinner-inline"></span>
+      </button>
+
+      <p class="switch-hint">
+        Аккаунт бар ма?
+        <button class="link-btn" (click)="switchTab('login')">Кіру</button>
+      </p>
+    </div>
+
+  </div>
+</div>

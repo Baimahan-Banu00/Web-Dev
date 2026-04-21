@@ -1,42 +1,48 @@
-import { Component, OnInit, NgZone } from '@angular/core';
-import { RouterLink, ActivatedRoute } from '@angular/router';
+// src/app/pages/restaurants/restaurants.ts
+import { Component, OnInit } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
+import { FormsModule } from '@angular/forms';
+import { RestaurantService } from '../../services/restaurant';
+import { Restaurant } from '../../interfaces/models';
+import { MOCK_RESTAURANTS } from '../../data/mockdata';
 
 @Component({
   selector: 'app-restaurants',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, FormsModule],
   templateUrl: './restaurants.html',
   styleUrl: './restaurants.css'
 })
 export class RestaurantsComponent implements OnInit {
-  restaurants: any[] = [];
-  filteredRestaurants: any[] = [];
+  restaurants: Restaurant[] = [];
+  filteredRestaurants: Restaurant[] = [];
   activeFilter = 'all';
+  searchQuery = '';
+  loading = true;
+  error = '';
 
-  fastfood = ['Баханди', 'Салам Бро', 'Донер на Сатпаева', 'Абая Донер', 'Окадзаки', 'Додо'];
-  european = ['Неделька', 'Дель Папа'];
-  asian = ['Дегирмен', 'Нават', 'Қауасар', 'Центр Шашлык'];
+  categories = [
+    { id: 'all', label: 'Барлығы', icon: '🍽️' },
+    { id: 'fastfood', label: 'Фаст фуд', icon: '🍔' },
+    { id: 'asian', label: 'Азиялық', icon: '🍜' },
+    { id: 'european', label: 'Еуропалық', icon: '🥘' },
+  ];
 
-  constructor(private http: HttpClient, private zone: NgZone, private route: ActivatedRoute) {}
+  constructor(private restaurantService: RestaurantService) {}
 
   ngOnInit() {
-    this.route.queryParams.subscribe(params => {
-      if (params['filter']) {
-        this.activeFilter = params['filter'];
-      }
-    });
-
-    this.http.get<any[]>('http://127.0.0.1:8000/api/restaurants/').subscribe({
+    this.restaurantService.getRestaurants().subscribe({
       next: (data) => {
-        this.zone.run(() => {
-          this.restaurants = data;
-          this.applyFilter();
-        });
+        this.restaurants = data;
+        this.applyFilter();
+        this.loading = false;
       },
       error: (err) => {
-        console.error(err);
+        this.error = 'Не удалось загрузить рестораны';
+        this.restaurants = MOCK_RESTAURANTS as Restaurant[];
+        this.applyFilter();
+        this.loading = false;
       }
     });
   }
@@ -46,33 +52,66 @@ export class RestaurantsComponent implements OnInit {
     this.applyFilter();
   }
 
-  applyFilter() {
-    if (this.activeFilter === 'all') {
-      this.filteredRestaurants = this.restaurants;
-    } else if (this.activeFilter === 'fastfood') {
-      this.filteredRestaurants = this.restaurants.filter(r =>
-        this.fastfood.some(name => r.name.includes(name))
-      );
-    } else if (this.activeFilter === 'european') {
-      this.filteredRestaurants = this.restaurants.filter(r =>
-        this.european.some(name => r.name.includes(name))
-      );
-    } else if (this.activeFilter === 'asian') {
-      this.filteredRestaurants = this.restaurants.filter(r =>
-        this.asian.some(name => r.name.includes(name))
-      );
-    }
+  onSearch() {
+    this.applyFilter();
   }
 
-  getIcon(name: string): string {
-    if (name.includes('Пицца') || name.includes('Додо')) return '🍕';
-    if (name.includes('Донер')) return '🌮';
-    if (name.includes('Суши') || name.includes('Окадзаки')) return '🍱';
-    if (name.includes('Баханди') || name.includes('Нават') || name.includes('Қауасар')) return '🍖';
-    if (name.includes('Салам')) return '🍔';
-    if (name.includes('Дегирмен')) return '🍜';
-    if (name.includes('Неделька') || name.includes('Дель Папа')) return '🍝';
-    if (name.includes('Шашлык')) return '🥩';
-    return '🍽️';
+  applyFilter() {
+    let result = this.restaurants;
+
+    if (this.activeFilter !== 'all') {
+      result = result.filter(r => {
+        const cat = (r as any).category;
+        if (typeof cat === 'string') return cat === this.activeFilter;
+        // fallback по имени
+        const fastfoodNames = ['Gippo', 'Burger', 'Salam', 'Додо'];
+        const asianNames = ['Окадзаки', 'Нават', 'Шашлык', 'Дегирмен'];
+        const europeanNames = ['Дель', 'Неделька'];
+        if (this.activeFilter === 'fastfood') return fastfoodNames.some(n => r.name.includes(n));
+        if (this.activeFilter === 'asian') return asianNames.some(n => r.name.includes(n));
+        if (this.activeFilter === 'european') return europeanNames.some(n => r.name.includes(n));
+        return true;
+      });
+    }
+
+    if (this.searchQuery.trim()) {
+      const q = this.searchQuery.toLowerCase();
+      result = result.filter(r =>
+        r.name.toLowerCase().includes(q) ||
+        r.address.toLowerCase().includes(q) ||
+        r.description?.toLowerCase().includes(q)
+      );
+    }
+
+    this.filteredRestaurants = result;
   }
-} 
+
+  getRestaurantImage(r: Restaurant): string {
+    return (r as any).image || 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=600&q=80';
+  }
+
+  getRating(r: Restaurant): number {
+    return (r as any).rating || 95;
+  }
+
+  getReviews(r: Restaurant): string {
+    const n = (r as any).reviews || 100;
+    return n >= 500 ? '500+' : String(n);
+  }
+
+  getDeliveryTime(r: Restaurant): string {
+    return (r as any).deliveryTime || '30-40 мин';
+  }
+
+  getDeliveryFee(r: Restaurant): string {
+    return (r as any).deliveryFee || '299 ₸';
+  }
+
+  getTags(r: Restaurant): string[] {
+    return (r as any).tags || [];
+  }
+
+  isFree(r: Restaurant): boolean {
+    return this.getDeliveryFee(r) === 'Тегін';
+  }
+}

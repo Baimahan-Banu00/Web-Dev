@@ -1,29 +1,95 @@
-<div class="container">
+<!-- src/app/pages/restaurants/restaurants.html -->
+<div class="page">
+
+  <!-- NAVBAR -->
   <nav class="navbar">
-    <h1 routerLink="/">🍕 FoodGo</h1>
-    <div class="nav-links">
-      <a routerLink="/">Главная</a>
-      <a routerLink="/orders">Мои заказы</a>
+    <a routerLink="/" class="logo">
+      <span class="logo-icon">🍕</span>
+      <span class="logo-text">FoodGo</span>
+    </a>
+    <div class="nav-center">
+      <div class="search-bar">
+        <span class="search-icon">🔍</span>
+        <input
+          type="text"
+          placeholder="Іздеу..."
+          [(ngModel)]="searchQuery"
+          (input)="onSearch()"
+          class="search-input"
+        />
+      </div>
+    </div>
+    <div class="nav-right">
+      <a routerLink="/orders" class="nav-link">Тапсырыстар</a>
+      <a routerLink="/login" class="nav-btn">Кіру</a>
     </div>
   </nav>
 
   <div class="content">
-    <div class="filters">
-      <button class="filter-btn" [class.active]="activeFilter === 'all'" (click)="setFilter('all')">Барлығы</button>
-      <button class="filter-btn" [class.active]="activeFilter === 'fastfood'" (click)="setFilter('fastfood')">🍔 Фаст фуд</button>
-      <button class="filter-btn" [class.active]="activeFilter === 'european'" (click)="setFilter('european')">🥘 Еуропалық</button>
-      <button class="filter-btn" [class.active]="activeFilter === 'asian'" (click)="setFilter('asian')">🍜 Азиялық</button>
+    <!-- CATEGORY FILTERS -->
+    <div class="categories-scroll">
+      <button
+        *ngFor="let cat of categories"
+        class="cat-btn"
+        [class.active]="activeFilter === cat.id"
+        (click)="setFilter(cat.id)"
+      >
+        <span class="cat-icon">{{ cat.icon }}</span>
+        <span>{{ cat.label }}</span>
+      </button>
     </div>
 
-    <div class="restaurants-grid">
-      <div *ngFor="let r of filteredRestaurants" class="restaurant-card" [routerLink]="['/restaurants', r.id]">
-        <div class="restaurant-icon">{{ getIcon(r.name) }}</div>
-        <h3>{{ r.name }}</h3>
-        <p>{{ r.address }}</p>
-        <button class="btn">Смотреть меню</button>
+    <!-- RESULTS INFO -->
+    <div class="results-bar" *ngIf="!loading">
+      <span class="results-count">{{ filteredRestaurants.length }} нәтиже</span>
+    </div>
+
+    <!-- LOADING -->
+    <div *ngIf="loading" class="loading-grid">
+      <div *ngFor="let i of [1,2,3,4,5,6]" class="skeleton-card">
+        <div class="skeleton-img"></div>
+        <div class="skeleton-line"></div>
+        <div class="skeleton-line short"></div>
       </div>
     </div>
 
-    <div *ngIf="filteredRestaurants.length === 0">Рестораны не найдены</div>
+    <!-- ERROR -->
+    <div *ngIf="error && !loading" class="error-bar">
+      ⚠️ {{ error }} — показываем демо-данные
+    </div>
+
+    <!-- RESTAURANT GRID -->
+    <div *ngIf="!loading" class="restaurants-grid">
+      <a
+        *ngFor="let r of filteredRestaurants"
+        [routerLink]="['/restaurants', r.id]"
+        class="restaurant-card"
+      >
+        <div class="card-image-wrap">
+          <img [src]="getRestaurantImage(r)" [alt]="r.name" class="card-img" loading="lazy" />
+          <div *ngIf="isFree(r)" class="badge free">Тегін жеткізу</div>
+          <div *ngIf="!isFree(r)" class="badge fee">{{ getDeliveryFee(r) }}</div>
+        </div>
+        <div class="card-body">
+          <h3 class="card-title">{{ r.name }}</h3>
+          <p class="card-address">📍 {{ r.address }}</p>
+          <div class="card-meta">
+            <span class="rating">👍 {{ getRating(r) }}% ({{ getReviews(r) }})</span>
+            <span class="dot">·</span>
+            <span class="time">⏱ {{ getDeliveryTime(r) }}</span>
+          </div>
+          <div class="tags" *ngIf="getTags(r).length > 0">
+            <span *ngFor="let tag of getTags(r)" class="tag">{{ tag }}</span>
+          </div>
+        </div>
+      </a>
+    </div>
+
+    <!-- EMPTY STATE -->
+    <div *ngIf="!loading && filteredRestaurants.length === 0" class="empty-state">
+      <div class="empty-icon">🍽️</div>
+      <p>Ресторандар табылмады</p>
+      <button (click)="setFilter('all')" class="reset-btn">Барлығын көрсету</button>
+    </div>
   </div>
 </div>
